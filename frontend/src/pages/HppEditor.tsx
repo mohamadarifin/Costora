@@ -49,7 +49,7 @@ function NumInput({ value, onChange, testId, disabled, className = "" }: { value
   );
 }
 
-function HppForm({ initial, id }: { initial: HppIn; id: string | null }) {
+function HppForm({ initial, id, live }: { initial: HppIn; id: string | null; live?: Hpp }) {
   const { data: me } = useMe();
   const editable = can(me, "hpp:write");
   const nav = useNavigate();
@@ -199,7 +199,7 @@ function HppForm({ initial, id }: { initial: HppIn; id: string | null }) {
 
       <div className="mt-4">
         <ApprovalPanel slots={HPP_SLOTS} value={form.approvals ?? {}} onChange={(v) => set("approvals", v)} disabled={!editable} testPrefix="hpp"
-          status={HPP_SLOTS.every((s) => form.approvals?.[s.key]) ? "approved" : HPP_SLOTS.some((s) => form.approvals?.[s.key]) ? "partial" : "draft"} />
+          kind="hpp" docId={id} saved={live?.approvals ?? {}} signed={live?.approval_signed ?? {}} />
       </div>
 
       {id && (
@@ -257,5 +257,5 @@ export default function HppEditor() {
   if (isNew) return <HppForm key="new" initial={EMPTY} id={null} />;
   if (isLoading) return <p className="text-sm text-muted-foreground">Memuat HPP...</p>;
   if (isError || !data) return <div><PageHeader title="HPP" /><Empty text="HPP tidak ditemukan atau server tidak tersedia." testId="hpp-not-found" /></div>;
-  return <HppForm key={data.id + data.updated_at} initial={data} id={data.id} />;
+  return <HppForm key={data.id + data.updated_at} initial={data} id={data.id} live={data} />;
 }

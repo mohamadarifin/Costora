@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { NavLink, Navigate, Outlet, useLocation } from "react-router-dom";
 import {
-  BarChart3, Boxes, PenLine, ClipboardList, FileSpreadsheet, HardHat, LayoutDashboard, LogOut, Menu, PackageCheck, Users,
+  BarChart3, BadgeCheck, Boxes, PenLine, ClipboardList, FileSpreadsheet, HardHat, LayoutDashboard, LogOut, Menu, PackageCheck, Users,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Toaster } from "@/components/ui/sonner";
+import NotificationBell from "@/components/NotificationBell";
 import { can, useMe } from "@/lib/auth";
 import { endSession } from "@/lib/session";
 import { ROLE_LABELS } from "@/lib/format";
@@ -20,6 +21,7 @@ const NAV = [
   { to: "/materials", label: "Database Material", icon: Boxes, perm: "material:read", id: "materials" },
   { to: "/labor", label: "Upah Tenaga Kerja", icon: HardHat, perm: "labor:read", id: "labor" },
   { to: "/reports", label: "Laporan", icon: BarChart3, perm: "report:read", id: "reports" },
+  { to: "/approvals", label: "Persetujuan Saya", icon: BadgeCheck, perm: "report:read", id: "approvals" },
   { to: "/signatures", label: "Template Tanda Tangan", icon: PenLine, perm: "report:read", id: "signatures" },
   { to: "/users", label: "Pengguna", icon: Users, perm: "user:manage", id: "users" },
 ];
@@ -94,6 +96,7 @@ export default function AppShell() {
             <span className="hidden text-xs uppercase tracking-[0.16em] text-muted-foreground sm:inline">Sistem HPP · Research &amp; Development</span>
           </div>
           <div className="flex items-center gap-3">
+            <NotificationBell />
             <div className="text-right leading-tight">
               <p className="text-sm font-medium" data-testid="header-user-name">{user.name}</p>
               <p className="text-[11px] text-muted-foreground">{user.email}</p>

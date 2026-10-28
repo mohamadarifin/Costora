@@ -137,6 +137,7 @@ class Hpp(HppIn):
     month: str = ""
     totals: HppTotals = HppTotals()
     approval_status: str = "draft"
+    approval_signed: dict[str, str] = {}
     source: str = "manual"
     created_by: str = ""
     created_at: str = ""
@@ -185,6 +186,7 @@ class Packaging(PackagingIn):
     id: str = Field(default_factory=new_id)
     month: str = ""
     approval_status: str = "draft"
+    approval_signed: dict[str, str] = {}
     source: str = "manual"
     created_by: str = ""
     created_at: str = ""
@@ -251,6 +253,7 @@ class Signature(BaseModel):
     id: str = Field(default_factory=new_id)
     name: str
     position: str = ""
+    user_id: Optional[str] = None
     stored_name: str = ""
     content_type: str = ""
     created_by: str = ""
@@ -286,3 +289,55 @@ class MonthReportRow(BaseModel):
     total_hpp: float
     packaging_count: int
     items: list[HppSummary]
+
+
+class SignatureUpdate(BaseModel):
+    name: str = Field(min_length=1)
+    position: str = ""
+    user_id: Optional[str] = None
+
+
+class UserBrief(BaseModel):
+    id: str
+    name: str
+    email: str
+
+
+class Notification(BaseModel):
+    id: str
+    user_id: str
+    type: Literal["request", "signed"]
+    kind: Literal["hpp", "packaging"]
+    doc_id: str
+    slot: str
+    title: str
+    message: str
+    link: str
+    requested_by: Optional[str] = None
+    read: bool = False
+    created_at: str
+
+
+class NotificationList(BaseModel):
+    items: list[Notification]
+    unread: int
+
+
+class PendingApproval(BaseModel):
+    kind: Literal["hpp", "packaging"]
+    doc_id: str
+    slot: str
+    slot_label: str
+    title: str
+    buyer: str
+    date: str
+    approval_status: str
+
+
+class SignIn(BaseModel):
+    slot: str
+
+
+class ApprovalState(BaseModel):
+    approval_status: str
+    approval_signed: dict[str, str]

@@ -46,7 +46,7 @@ export function errMsg(e: unknown): string {
 
 export const APPROVAL_LABELS: Record<string, { label: string; cls: string }> = {
   draft: { label: "Draft", cls: "bg-[#EEF2EF] text-[#4F6359]" },
-  partial: { label: "Proses approval", cls: "bg-[#FBF3DC] text-[#7A5B12]" },
+  partial: { label: "Menunggu tanda tangan", cls: "bg-[#FBF3DC] text-[#7A5B12]" },
   approved: { label: "Approved", cls: "bg-[#D1FAE5] text-[#065F46]" },
 };
 export const HPP_SLOTS = [{ key: "dibuat", label: "Dibuat" }, { key: "diperiksa", label: "Diperiksa" }, { key: "diketahui", label: "Diketahui" }];

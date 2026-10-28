@@ -27,7 +27,7 @@ export interface HppIn {
   labor_year: number; markup: number; notes: string; lines: HppLine[]; approvals: Record<string, string | null>;
 }
 export interface Hpp extends HppIn {
-  id: string; month: string; totals: HppTotals; approval_status: string; source: string; created_by: string; created_at: string; updated_at: string;
+  id: string; month: string; totals: HppTotals; approval_status: string; approval_signed: Record<string, string>; source: string; created_by: string; created_at: string; updated_at: string;
 }
 export interface HppSummary {
   id: string; code_item: string; colour: string; buyer: string; type: string; date: string; month: string;
@@ -40,7 +40,7 @@ export interface PackagingIn {
   marking: boolean; label: boolean; notes: string; sign_marketing: string; sign_dibuat_rnd: string; sign_mengetahui_rnd: string;
   approvals: Record<string, string | null>;
 }
-export interface Packaging extends PackagingIn { id: string; month: string; approval_status: string; source: string; created_by: string; created_at: string; updated_at: string }
+export interface Packaging extends PackagingIn { id: string; month: string; approval_status: string; approval_signed: Record<string, string>; source: string; created_by: string; created_at: string; updated_at: string }
 
 export interface Attachment {
   id: string; owner_type: "hpp" | "packaging"; owner_id: string; filename: string; content_type: string; size: number;
@@ -56,7 +56,7 @@ export interface MonthPoint { month: string; count: number; total_hpp: number }
 export interface BuyerPoint { buyer: string; count: number; total_hpp: number }
 export interface SectionPoint { section: string; total: number }
 export interface ActivityPoint { date: string; hpp: number; packaging: number }
-export interface Signature { id: string; name: string; position: string; stored_name: string; content_type: string; created_by: string; created_at: string }
+export interface Signature { id: string; name: string; position: string; user_id: string | null; stored_name: string; content_type: string; created_by: string; created_at: string }
 export interface Dashboard { activity: ActivityPoint[]; approved_count: number; generated_at: string; kpis: Kpis; monthly: MonthPoint[]; buyers: BuyerPoint[]; sections: SectionPoint[]; recent: HppSummary[] }
 export interface BuyerReportRow {
   buyer: string; count: number; total_net: number; total_hpp: number; avg_hpp: number; packaging_count: number; items: HppSummary[];
@@ -64,3 +64,14 @@ export interface BuyerReportRow {
 export interface MonthReportRow {
   month: string; count: number; buyer_count: number; total_net: number; total_hpp: number; packaging_count: number; items: HppSummary[];
 }
+export interface SignatureUpdate { name: string; position: string; user_id: string | null }
+export interface UserBrief { id: string; name: string; email: string }
+export interface Notification {
+  id: string; user_id: string; type: "request" | "signed"; kind: "hpp" | "packaging"; doc_id: string; slot: string; title: string;
+  message: string; link: string; requested_by: string | null; read: boolean; created_at: string;
+}
+export interface NotificationList { items: Notification[]; unread: number }
+export interface PendingApproval {
+  kind: "hpp" | "packaging"; doc_id: string; slot: string; slot_label: string; title: string; buyer: string; date: string; approval_status: string;
+}
+export interface ApprovalState { approval_status: string; approval_signed: Record<string, string> }

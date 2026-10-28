@@ -12,6 +12,7 @@ import Labor from "@/pages/Labor";
 import Reports from "@/pages/Reports";
 import UsersPage from "@/pages/Users";
 import Signatures from "@/pages/Signatures";
+import Approvals from "@/pages/Approvals";
 import { Toaster } from "@/components/ui/sonner";
 
 // One <Route> per page in src/pages; BrowserRouter already wraps this in main.tsx.
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/reports" element={<Reports />} />
         <Route path="/users" element={<UsersPage />} />
         <Route path="/signatures" element={<Signatures />} />
+        <Route path="/approvals" element={<Approvals />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

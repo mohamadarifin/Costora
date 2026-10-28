@@ -20,7 +20,10 @@ USERS = [
     ("admin@balagi.com", "Administrator", "admin", "admin123"),
     ("marketing@balagi.com", "Vivian (Marketing)", "marketing", "marketing123"),
     ("rnd@balagi.com", "Tim R&D", "rnd", "rnd123"),
+    ("ucu@balagi.com", "Ucu Moch.R", "rnd", "ucu123"),
+    ("haryanto@balagi.com", "Haryanto S", "rnd", "haryanto123"),
 ]
+SIGNER_LINKS = {"Sholehudin M": "rnd@balagi.com", "Ucu Moch.R": "ucu@balagi.com", "Haryanto S": "haryanto@balagi.com"}
 
 CATEGORY_NAMES = {"PRICE MATERIAL RAW": "Material Raw", "Sub Material ( Supplies )": "Supplies", "Foam & Pabric": "Foam & Fabric",
                   "Out Sourching": "Out Sourcing", "TOTAL PRICE CUSHION": "Cushion"}
@@ -146,6 +149,26 @@ async def main(reset: bool):
         if h:
             await db.hpp.update_one({"id": h["id"]}, {"$set": {"approvals": dict(zip(["dibuat", "diperiksa", "diketahui"], ids)), "approval_status": "approved"}})
         print("signatures: 3 (contoh)")
+    if await db.signatures.count_documents({"user_id": {"$ne": None}}) == 0:  # migration: link signers + demo approval states
+        from lib.approvals import notify
+        users = {u["email"]: u for u in await db.users.find({}, {"_id": 0}).to_list(50)}
+        sigs = {}
+        for nm, email in SIGNER_LINKS.items():
+            await db.signatures.update_one({"name": nm}, {"$set": {"user_id": users[email]["id"]}})
+            sigs[nm] = await db.signatures.find_one({"name": nm}, {"_id": 0})
+        stamp = now_iso()
+        await db.hpp.update_many({"source": "seed"}, {"$set": {"approval_signed": {"dibuat": stamp, "diperiksa": stamp, "diketahui": stamp},
+                                                               "approval_status": "approved"}})
+        pk = await db.packaging.find_one({"source": "seed", "hpp_id": {"$ne": None}}, {"_id": 0})
+        if pk and all(sigs.values()):
+            appr = {"marketing": sigs["Sholehudin M"]["id"], "dibuat_rnd": sigs["Ucu Moch.R"]["id"], "mengetahui_rnd": sigs["Haryanto S"]["id"]}
+            await db.packaging.update_one({"id": pk["id"]}, {"$set": {"approvals": appr, "approval_signed": {"marketing": stamp}, "approval_status": "partial"}})
+            admin = users["admin@balagi.com"]
+            title = f"{pk['item_name']} · {pk['buyer']}"
+            for slot, nm, label in (("dibuat_rnd", "Ucu Moch.R", "Dibuat R&D"), ("mengetahui_rnd", "Haryanto S", "Mengetahui R&D")):
+                await notify(users[SIGNER_LINKS[nm]]["id"], "request", "packaging", pk["id"], slot, "Permintaan tanda tangan · Packaging Form",
+                             f"{admin['name']} meminta Anda menandatangani sebagai “{label}” pada {title}.", requested_by=admin["id"])
+        print("signers linked + demo approval requests")
     print("seed done")
 
 

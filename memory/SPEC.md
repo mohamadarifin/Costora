@@ -36,3 +36,9 @@ Source workbook: `backend/seed_data/HPP_AGUSTUS_2026.xlsx` (sheets: TENAGA KERJA
 - Dashboard: auto-refresh every 5 s (Live indicator), 14-day activity area chart, approved KPI, total HPP KPI.
 - Theme: emerald (#047857 / #022C22 sidebar) + gold (#B8963E), headings Playfair Display. Copyright "© FinDev" in sidebar, footer, login, and PDF footers.
 - Seed: 3 SAMPLE (generated) signatures Sholehudin M (Staff R&D), Ucu Moch.R (Supervisor R&D), Haryanto S (Manager R&D); seeded HPP approved with all three.
+
+## Iteration 3 — Approval notifications (in-app only, no email)
+- signatures.user_id links a template to a user account (PUT /api/signatures/{id}, GET /api/signatures/users for pickers).
+- Assigning a signer (saving HPP/Packaging) = REQUEST; slot is waiting until the linked user calls POST /api/approvals/{kind}/{id}/sign {slot} (403 if not owner, 409 if already signed / unassigned). approval_signed {slot: iso}. Reassigning a slot clears its signature. Status approved only when all 3 assigned AND signed. PDF shows signature image only for signed slots.
+- notifications collection {id,user_id,type request|signed,kind,doc_id,slot,title,message,link,requested_by,read}. GET /api/notifications (mine + unread), POST /{id}/read, POST /read-all. Requester gets a "signed" notification.
+- GET /api/approvals/pending → my waiting slots. UI: header bell (polls 15 s), page /approvals "Persetujuan Saya", Tandatangani button in ApprovalPanel.

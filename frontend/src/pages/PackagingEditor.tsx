@@ -25,7 +25,7 @@ const EMPTY: PackagingIn = {
 
 type TextKey = "buyer" | "item_name" | "color" | "po_no" | "etd" | "produksi_sample" | "ros_rop" | "keterangan";
 
-function PackagingFormView({ initial, id }: { initial: PackagingIn; id: string | null }) {
+function PackagingFormView({ initial, id, live }: { initial: PackagingIn; id: string | null; live?: Packaging }) {
   const { data: me } = useMe();
   const editable = can(me, "packaging:write");
   const nav = useNavigate();
@@ -143,7 +143,7 @@ function PackagingFormView({ initial, id }: { initial: PackagingIn; id: string |
           </Panel>
 
           <ApprovalPanel slots={PACKAGING_SLOTS} value={f.approvals ?? {}} onChange={(v) => set("approvals", v)} disabled={!editable} testPrefix="packaging"
-            status={PACKAGING_SLOTS.every((s) => f.approvals?.[s.key]) ? "approved" : PACKAGING_SLOTS.some((s) => f.approvals?.[s.key]) ? "partial" : "draft"} />
+            kind="packaging" docId={id} saved={live?.approvals ?? {}} signed={live?.approval_signed ?? {}} />
 
           <Panel title="Nama penandatangan manual (opsional, jika tanpa template)" testId="packaging-signatures">
             <div className="grid gap-4 md:grid-cols-3">
@@ -177,5 +177,5 @@ export default function PackagingEditor() {
   if (isNew) return <PackagingFormView key="new" initial={EMPTY} id={null} />;
   if (isLoading) return <p className="text-sm text-muted-foreground">Memuat...</p>;
   if (isError || !data) return <div><PageHeader title="Packaging Form" /><Empty text="Packaging form tidak ditemukan atau server tidak tersedia." testId="packaging-not-found" /></div>;
-  return <PackagingFormView key={data.id + data.updated_at} initial={data} id={data.id} />;
+  return <PackagingFormView key={data.id + data.updated_at} initial={data} id={data.id} live={data} />;
 }

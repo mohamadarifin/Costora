@@ -10,19 +10,20 @@ from lib.db import db
 from lib.hpp_calc import compute
 from lib.pdf import hpp_pdf
 from models.schemas import Hpp, HppIn, HppSummary, new_id
+from lib.approvals import sync_approvals
 from routers.signatures import HPP_SLOTS, approval_status, resolve_signatures, validate_approvals
 
 router = APIRouter(prefix="/hpp", tags=["hpp"])
 SUMMARY_PROJ = {"_id": 0, "lines": 0}
 
 
-def build_hpp(body: HppIn, user_name: str, source: str = "manual", existing: dict | None = None) -> Hpp:
+def build_hpp(body: HppIn, user_name: str, source: str = "manual", existing: dict | None = None, signed: dict | None = None) -> Hpp:
     lines, totals = compute(body.lines, body.markup)
     data = body.model_dump()
     data["lines"] = lines
     now = now_iso()
     return Hpp(**data, id=(existing or {}).get("id", new_id()), month=body.date[:7], totals=totals,
-               approval_status=approval_status(body.approvals, HPP_SLOTS),
+               approval_status=approval_status(body.approvals, HPP_SLOTS, signed), approval_signed=signed or {},
                source=(existing or {}).get("source", source), created_by=(existing or {}).get("created_by", user_name),
                created_at=(existing or {}).get("created_at", now), updated_at=now)
 
@@ -66,6 +67,7 @@ async def create_hpp(body: HppIn, user: dict = Depends(require("hpp:write"))):
     body.approvals = await validate_approvals(body.approvals, HPP_SLOTS)
     h = build_hpp(body, user["name"])
     await db.hpp.insert_one(h.model_dump())
+    await sync_approvals("hpp", h.id, f"{h.code_item} · {h.buyer}", HPP_SLOTS, h.approvals, {}, {}, user)
     return h
 
 
@@ -75,7 +77,9 @@ async def update_hpp(id: str, body: HppIn, user: dict = Depends(require("hpp:wri
     if not existing:
         raise HTTPException(status_code=404, detail="HPP tidak ditemukan")
     body.approvals = await validate_approvals(body.approvals, HPP_SLOTS)
-    h = build_hpp(body, user["name"], existing=existing)
+    signed = await sync_approvals("hpp", id, f"{body.code_item} · {body.buyer}", HPP_SLOTS, body.approvals,
+                                  existing.get("approvals") or {}, existing.get("approval_signed") or {}, user)
+    h = build_hpp(body, user["name"], existing=existing, signed=signed)
     await db.hpp.replace_one({"id": id}, h.model_dump())
     return h
 
@@ -111,7 +115,7 @@ async def hpp_pdf_route(id: str, _: dict = Depends(require("hpp:read"))):
     if not doc:
         raise HTTPException(status_code=404, detail="HPP tidak ditemukan")
     safe = re.sub(r"[^A-Za-z0-9_-]+", "_", doc["code_item"])[:60]
-    sigs = await resolve_signatures(doc.get("approvals") or {}, HPP_SLOTS)
+    sigs = await resolve_signatures(doc.get("approvals") or {}, HPP_SLOTS, doc.get("approval_signed") or {})
     img = await db.attachments.find_one({"owner_type": "hpp", "owner_id": id, "content_type": {"$regex": "^image/(png|jpe?g)"}}, {"_id": 0})
     upload_dir = Path(os.environ.get("UPLOAD_DIR", "/app/backend/uploads"))
     img_path = str(upload_dir / img["stored_name"]) if img and (upload_dir / img["stored_name"]).exists() else None
