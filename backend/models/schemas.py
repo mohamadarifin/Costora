@@ -116,6 +116,15 @@ class HppTotals(BaseModel):
     hpp_total: float = 0
 
 
+class ApprovalRejection(BaseModel):
+    slot: str
+    slot_label: str
+    reason: str
+    by_name: str
+    by_user_id: str
+    at: str
+
+
 class HppIn(BaseModel):
     code_item: str = Field(min_length=1)
     colour: str = ""
@@ -138,6 +147,7 @@ class Hpp(HppIn):
     totals: HppTotals = HppTotals()
     approval_status: str = "draft"
     approval_signed: dict[str, str] = {}
+    approval_rejection: Optional[ApprovalRejection] = None
     source: str = "manual"
     created_by: str = ""
     created_at: str = ""
@@ -187,6 +197,7 @@ class Packaging(PackagingIn):
     month: str = ""
     approval_status: str = "draft"
     approval_signed: dict[str, str] = {}
+    approval_rejection: Optional[ApprovalRejection] = None
     source: str = "manual"
     created_by: str = ""
     created_at: str = ""
@@ -306,7 +317,7 @@ class UserBrief(BaseModel):
 class Notification(BaseModel):
     id: str
     user_id: str
-    type: Literal["request", "signed"]
+    type: Literal["request", "signed", "rejected"]
     kind: Literal["hpp", "packaging"]
     doc_id: str
     slot: str
@@ -336,6 +347,11 @@ class PendingApproval(BaseModel):
 
 class SignIn(BaseModel):
     slot: str
+
+
+class RejectIn(BaseModel):
+    slot: str
+    reason: str = Field(min_length=3, max_length=1000)
 
 
 class ApprovalState(BaseModel):

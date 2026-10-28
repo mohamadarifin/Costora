@@ -48,6 +48,7 @@ export const APPROVAL_LABELS: Record<string, { label: string; cls: string }> = {
   draft: { label: "Draft", cls: "bg-[#EEF2EF] text-[#4F6359]" },
   partial: { label: "Menunggu tanda tangan", cls: "bg-[#FBF3DC] text-[#7A5B12]" },
   approved: { label: "Approved", cls: "bg-[#D1FAE5] text-[#065F46]" },
+  rejected: { label: "Ditolak — perlu revisi", cls: "bg-[#FEE2E2] text-[#991B1B]" },
 };
 export const HPP_SLOTS = [{ key: "dibuat", label: "Dibuat" }, { key: "diperiksa", label: "Diperiksa" }, { key: "diketahui", label: "Diketahui" }];
 export const PACKAGING_SLOTS = [{ key: "marketing", label: "Marketing" }, { key: "dibuat_rnd", label: "Dibuat R&D" }, { key: "mengetahui_rnd", label: "Mengetahui R&D" }];

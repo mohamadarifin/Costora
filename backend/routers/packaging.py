@@ -80,7 +80,8 @@ async def update_packaging(id: str, body: PackagingIn, user: dict = Depends(requ
     await _check_hpp(body.hpp_id)
     body.approvals = await validate_approvals(body.approvals, PACKAGING_SLOTS)
     signed = await sync_approvals("packaging", id, f"{body.item_name or 'Packaging'} · {body.buyer}", PACKAGING_SLOTS, body.approvals,
-                                  existing.get("approvals") or {}, existing.get("approval_signed") or {}, user)
+                                  {} if existing.get("approval_rejection") else (existing.get("approvals") or {}),
+                                  {} if existing.get("approval_rejection") else (existing.get("approval_signed") or {}), user)
     p = build_packaging(body, user["name"], existing=existing, signed=signed)
     await db.packaging.replace_one({"id": id}, p.model_dump())
     return p

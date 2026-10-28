@@ -78,7 +78,8 @@ async def update_hpp(id: str, body: HppIn, user: dict = Depends(require("hpp:wri
         raise HTTPException(status_code=404, detail="HPP tidak ditemukan")
     body.approvals = await validate_approvals(body.approvals, HPP_SLOTS)
     signed = await sync_approvals("hpp", id, f"{body.code_item} · {body.buyer}", HPP_SLOTS, body.approvals,
-                                  existing.get("approvals") or {}, existing.get("approval_signed") or {}, user)
+                                  {} if existing.get("approval_rejection") else (existing.get("approvals") or {}),
+                                  {} if existing.get("approval_rejection") else (existing.get("approval_signed") or {}), user)
     h = build_hpp(body, user["name"], existing=existing, signed=signed)
     await db.hpp.replace_one({"id": id}, h.model_dump())
     return h

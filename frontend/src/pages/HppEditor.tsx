@@ -199,7 +199,7 @@ function HppForm({ initial, id, live }: { initial: HppIn; id: string | null; liv
 
       <div className="mt-4">
         <ApprovalPanel slots={HPP_SLOTS} value={form.approvals ?? {}} onChange={(v) => set("approvals", v)} disabled={!editable} testPrefix="hpp"
-          kind="hpp" docId={id} saved={live?.approvals ?? {}} signed={live?.approval_signed ?? {}} />
+          kind="hpp" docId={id} saved={live?.approvals ?? {}} signed={live?.approval_signed ?? {}} rejection={live?.approval_rejection ?? null} title={`${form.code_item} · ${form.buyer}`} />
       </div>
 
       {id && (

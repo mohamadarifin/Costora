@@ -143,7 +143,7 @@ function PackagingFormView({ initial, id, live }: { initial: PackagingIn; id: st
           </Panel>
 
           <ApprovalPanel slots={PACKAGING_SLOTS} value={f.approvals ?? {}} onChange={(v) => set("approvals", v)} disabled={!editable} testPrefix="packaging"
-            kind="packaging" docId={id} saved={live?.approvals ?? {}} signed={live?.approval_signed ?? {}} />
+            kind="packaging" docId={id} saved={live?.approvals ?? {}} signed={live?.approval_signed ?? {}} rejection={live?.approval_rejection ?? null} title={`${f.item_name || "Packaging"} · ${f.buyer}`} />
 
           <Panel title="Nama penandatangan manual (opsional, jika tanpa template)" testId="packaging-signatures">
             <div className="grid gap-4 md:grid-cols-3">

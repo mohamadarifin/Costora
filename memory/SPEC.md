@@ -42,3 +42,9 @@ Source workbook: `backend/seed_data/HPP_AGUSTUS_2026.xlsx` (sheets: TENAGA KERJA
 - Assigning a signer (saving HPP/Packaging) = REQUEST; slot is waiting until the linked user calls POST /api/approvals/{kind}/{id}/sign {slot} (403 if not owner, 409 if already signed / unassigned). approval_signed {slot: iso}. Reassigning a slot clears its signature. Status approved only when all 3 assigned AND signed. PDF shows signature image only for signed slots.
 - notifications collection {id,user_id,type request|signed,kind,doc_id,slot,title,message,link,requested_by,read}. GET /api/notifications (mine + unread), POST /{id}/read, POST /read-all. Requester gets a "signed" notification.
 - GET /api/approvals/pending → my waiting slots. UI: header bell (polls 15 s), page /approvals "Persetujuan Saya", Tandatangani button in ApprovalPanel.
+
+## Iteration 4 — Tolak dengan Catatan (reject with reason)
+- POST /api/approvals/{kind}/{id}/reject {slot, reason(min 3)} — only the owner of that slot's signature, slot not yet signed, doc not already rejected (403/409/422 otherwise).
+- Effect: approval_status="rejected", approval_signed={} (all signatures reset), approval_rejection {slot,slot_label,reason,by_name,by_user_id,at}; open request notifications marked read; "rejected" notification (with reason) sent to the requester(s) + signers who had already signed.
+- While rejected: sign → 409, doc hidden from /approvals/pending. Saving the doc (revision) clears approval_rejection and re-sends requests to ALL assigned signers (status back to partial).
+- UI: "Tolak" button next to "Tandatangani" (ApprovalPanel + Persetujuan Saya) → dialog with required reason; red banner with reason on HPP/Packaging editor; badge "Ditolak — perlu revisi"; red notification icon.

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bell, CheckCheck, CircleCheck, PenLine } from "lucide-react";
+import { Bell, CheckCheck, CircleCheck, PenLine, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { apiGet, apiPost } from "@/lib/api";
@@ -45,8 +45,8 @@ export default function NotificationBell() {
               <button type="button" data-testid={`notification-item-${n.id}`}
                 className={`flex w-full gap-3 border-b px-4 py-3 text-left transition-colors hover:bg-[#F0F7F3] ${n.read ? "" : "bg-[#ECFDF5]/70"}`}
                 onClick={() => { if (!n.read) readOne.mutate(n.id); setOpen(false); nav(n.link); }}>
-                <span className={`mt-0.5 grid size-8 shrink-0 place-items-center rounded-full ${n.type === "request" ? "bg-[#FBF3DC] text-[#7A5B12]" : "bg-[#D1FAE5] text-[#065F46]"}`}>
-                  {n.type === "request" ? <PenLine className="size-4" /> : <CircleCheck className="size-4" />}
+                <span className={`mt-0.5 grid size-8 shrink-0 place-items-center rounded-full ${n.type === "request" ? "bg-[#FBF3DC] text-[#7A5B12]" : n.type === "rejected" ? "bg-[#FEE2E2] text-[#B91C1C]" : "bg-[#D1FAE5] text-[#065F46]"}`}>
+                  {n.type === "request" ? <PenLine className="size-4" /> : n.type === "rejected" ? <Undo2 className="size-4" /> : <CircleCheck className="size-4" />}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-2 text-[13px] font-semibold">{n.title}{!n.read && <span className="size-1.5 rounded-full bg-[#B8963E]" />}</span>

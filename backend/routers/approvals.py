@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from lib.approvals import KIND_LABEL, notify
 from lib.auth import current_user, now_iso
 from lib.db import db
-from models.schemas import ApprovalState, NotificationList, PendingApproval, SignIn
+from models.schemas import ApprovalRejection, ApprovalState, NotificationList, PendingApproval, RejectIn, SignIn
 from routers.signatures import HPP_SLOTS, PACKAGING_SLOTS, approval_status
 
 router = APIRouter(tags=["approvals"])
@@ -49,6 +49,7 @@ async def pending(user: dict = Depends(current_user)):
     out: list[PendingApproval] = []
     for kind, slots in SLOTS.items():
         flt = {"$or": [{f"approvals.{k}": {"$in": my_ids}} for k, _ in slots]}
+        flt["approval_status"] = {"$ne": "rejected"}
         async for d in _coll(kind).find(flt, {"_id": 0, "lines": 0}).sort("date", -1):
             for k, label in slots:
                 if (d.get("approvals") or {}).get(k) in my_ids and not (d.get("approval_signed") or {}).get(k):
@@ -73,6 +74,8 @@ async def sign(kind: Literal["hpp", "packaging"], id: str, body: SignIn, user: d
     sig = await db.signatures.find_one({"id": sig_id}, {"_id": 0})
     if not sig or sig.get("user_id") != user["id"]:
         raise HTTPException(status_code=403, detail="Hanya pemilik tanda tangan yang dapat menandatangani kolom ini")
+    if d.get("approval_status") == "rejected":
+        raise HTTPException(status_code=409, detail="Dokumen sedang dikembalikan untuk revisi — tunggu permintaan tanda tangan baru")
     if signed.get(body.slot):
         raise HTTPException(status_code=409, detail="Kolom ini sudah ditandatangani")
     signed[body.slot] = now_iso()
@@ -88,3 +91,44 @@ async def sign(kind: Literal["hpp", "packaging"], id: str, body: SignIn, user: d
             msg += " Semua tanda tangan lengkap — status Approved."
         await notify(req["requested_by"], "signed", kind, id, body.slot, f"Tanda tangan diterima · {KIND_LABEL[kind]}", msg)
     return ApprovalState(approval_status=status, approval_signed=signed)
+
+
+@router.post("/approvals/{kind}/{id}/reject", response_model=ApprovalState)
+async def reject(kind: Literal["hpp", "packaging"], id: str, body: RejectIn, user: dict = Depends(current_user)):
+    """Signer returns the document for revision: signatures reset, requester + earlier signers notified."""
+    slots = SLOTS[kind]
+    labels = dict(slots)
+    if body.slot not in labels:
+        raise HTTPException(status_code=422, detail="Kolom approval tidak valid")
+    reason = body.reason.strip()
+    if len(reason) < 3:
+        raise HTTPException(status_code=422, detail="Alasan penolakan minimal 3 karakter")
+    d = await _coll(kind).find_one({"id": id}, {"_id": 0, "lines": 0})
+    if not d:
+        raise HTTPException(status_code=404, detail=f"{KIND_LABEL[kind]} tidak ditemukan")
+    approvals, signed = d.get("approvals") or {}, d.get("approval_signed") or {}
+    sig_id = approvals.get(body.slot)
+    if not sig_id:
+        raise HTTPException(status_code=409, detail="Penandatangan untuk kolom ini belum dipilih")
+    sig = await db.signatures.find_one({"id": sig_id}, {"_id": 0})
+    if not sig or sig.get("user_id") != user["id"]:
+        raise HTTPException(status_code=403, detail="Hanya pemilik tanda tangan yang dapat menolak kolom ini")
+    if d.get("approval_status") == "rejected":
+        raise HTTPException(status_code=409, detail="Dokumen sudah dikembalikan untuk revisi")
+    if signed.get(body.slot):
+        raise HTTPException(status_code=409, detail="Kolom ini sudah ditandatangani")
+    rejection = ApprovalRejection(slot=body.slot, slot_label=labels[body.slot], reason=reason, by_name=user["name"], by_user_id=user["id"], at=now_iso())
+    await _coll(kind).update_one({"id": id}, {"$set": {"approval_status": "rejected", "approval_signed": {}, "approval_rejection": rejection.model_dump()}})
+    await db.notifications.update_many({"doc_id": id, "type": "request", "read": False}, {"$set": {"read": True}})
+    title = _title(kind, d)
+    msg = f"{user['name']} ({labels[body.slot]}) menolak {title}. Alasan: “{reason}”. Silakan revisi lalu simpan untuk mengirim ulang permintaan tanda tangan."
+    recipients: set[str] = set()
+    async for n in db.notifications.find({"doc_id": id, "type": "request", "requested_by": {"$ne": None}}, {"_id": 0, "requested_by": 1}):
+        recipients.add(n["requested_by"])
+    signer_ids = [approvals[k] for k in signed if approvals.get(k)]
+    async for sg in db.signatures.find({"id": {"$in": signer_ids}, "user_id": {"$ne": None}}, {"_id": 0, "user_id": 1}):
+        recipients.add(sg["user_id"])
+    recipients.discard(user["id"])
+    for uid in recipients:
+        await notify(uid, "rejected", kind, id, body.slot, f"Ditolak — perlu revisi · {KIND_LABEL[kind]}", msg)
+    return ApprovalState(approval_status="rejected", approval_signed={})

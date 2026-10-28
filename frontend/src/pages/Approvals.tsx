@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ClipboardList, PackageCheck, Signature as SignIcon } from "lucide-react";
+import { ClipboardList, PackageCheck, Signature as SignIcon, Undo2 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { ApprovalBadge, useSignApproval } from "@/components/ApprovalPanel";
+import { ApprovalBadge, RejectDialog, useSignApproval, type RejectTarget } from "@/components/ApprovalPanel";
 import { Empty, PageHeader, Panel } from "@/components/PageBits";
 import { apiGet } from "@/lib/api";
 import type { PendingApproval } from "@/lib/types";
@@ -10,6 +11,7 @@ import type { PendingApproval } from "@/lib/types";
 export default function Approvals() {
   const { data = [], isError, isLoading } = useQuery({ queryKey: ["approvals", "pending"], queryFn: () => apiGet<PendingApproval[]>("/approvals/pending"), refetchInterval: 15000 });
   const sign = useSignApproval();
+  const [rejectTarget, setRejectTarget] = useState<RejectTarget | null>(null);
   return (
     <div>
       <PageHeader title="Persetujuan Saya" subtitle="Daftar HPP dan Packaging Form yang menunggu tanda tangan Anda. Tanda tangan diambil dari template yang terhubung ke akun Anda." />
@@ -29,6 +31,10 @@ export default function Approvals() {
                 </div>
                 <ApprovalBadge status={p.approval_status} />
                 <Link to={p.kind === "hpp" ? `/hpp/${p.doc_id}` : `/packaging/${p.doc_id}`} className={buttonVariants({ variant: "outline", size: "sm" })} data-testid={`approval-open-${p.doc_id}-${p.slot}`}>Buka & periksa</Link>
+                <Button size="sm" variant="outline" className="border-[#FECACA] text-[#B91C1C] hover:bg-[#FEF2F2]"
+                  onClick={() => setRejectTarget({ kind: p.kind, docId: p.doc_id, slot: p.slot, slotLabel: p.slot_label, title: p.title })} data-testid={`approval-reject-${p.doc_id}-${p.slot}`}>
+                  <Undo2 className="size-4" /> Tolak
+                </Button>
                 <Button size="sm" className="bg-[#047857] hover:bg-[#065F46]" disabled={sign.isPending}
                   onClick={() => sign.mutate({ kind: p.kind, docId: p.doc_id, slot: p.slot })} data-testid={`approval-sign-${p.doc_id}-${p.slot}`}>
                   <SignIcon className="size-4" /> Tandatangani
@@ -38,6 +44,7 @@ export default function Approvals() {
           </ul>
         )}
       </Panel>
+      <RejectDialog target={rejectTarget} onClose={() => setRejectTarget(null)} />
     </div>
   );
 }
