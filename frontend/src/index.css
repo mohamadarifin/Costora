@@ -3,13 +3,13 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource/ibm-plex-mono/400.css";
 @import "@fontsource/ibm-plex-mono/500.css";
-@import "@fontsource-variable/outfit";
+@import "@fontsource-variable/playfair-display";
 @import "@fontsource-variable/plus-jakarta-sans";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: 'Outfit Variable', sans-serif;
+    --font-heading: 'Playfair Display Variable', serif;
     --font-sans: 'Plus Jakarta Sans Variable', sans-serif;
     --font-mono: 'IBM Plex Mono', monospace;
     --color-sidebar-ring: var(--sidebar-ring);
@@ -53,38 +53,38 @@
 }
 
 :root {
-    --background: #F8F7F4;
-    --foreground: #1C1917;
+    --background: #F4F7F5;
+    --foreground: #10201A;
     --card: #FFFFFF;
-    --card-foreground: #1C1917;
+    --card-foreground: #10201A;
     --popover: #FFFFFF;
-    --popover-foreground: #1C1917;
-    --primary: #8C5824;
+    --popover-foreground: #10201A;
+    --primary: #047857;
     --primary-foreground: #FFFFFF;
-    --secondary: #F3EFEA;
-    --secondary-foreground: #292524;
-    --muted: #F3EFEA;
-    --muted-foreground: #605A54;
-    --accent: #F5EFE6;
-    --accent-foreground: #6E4217;
+    --secondary: #E7F3EC;
+    --secondary-foreground: #064E3B;
+    --muted: #EAF3EE;
+    --muted-foreground: #4F6359;
+    --accent: #E6F4EC;
+    --accent-foreground: #065F46;
     --destructive: #DC2626;
-    --border: #E6E2DB;
-    --input: #DDD7CE;
-    --ring: #C47B2B;
-    --chart-1: #8C5824;
-    --chart-2: #C47B2B;
-    --chart-3: #4D6B3C;
-    --chart-4: #B45309;
+    --border: #DCE9E1;
+    --input: #CFE0D6;
+    --ring: #B8963E;
+    --chart-1: #047857;
+    --chart-2: #B8963E;
+    --chart-3: #10B981;
+    --chart-4: #0F766E;
     --chart-5: #57534E;
-    --radius: 0.5rem;
-    --sidebar: #1E1A16;
-    --sidebar-foreground: #FDFBF7;
-    --sidebar-primary: #F59E0B;
-    --sidebar-primary-foreground: #1E1A16;
-    --sidebar-accent: #342C24;
-    --sidebar-accent-foreground: #F59E0B;
-    --sidebar-border: #2E2822;
-    --sidebar-ring: #C47B2B;
+    --radius: 0.6rem;
+    --sidebar: #022C22;
+    --sidebar-foreground: #F5FBF7;
+    --sidebar-primary: #E6C878;
+    --sidebar-primary-foreground: #022C22;
+    --sidebar-accent: #064E3B;
+    --sidebar-accent-foreground: #E6C878;
+    --sidebar-border: #0B3B2F;
+    --sidebar-ring: #B8963E;
 }
 
 .dark {
@@ -144,6 +144,19 @@
   to { opacity: 1; transform: translateY(0); }
 }
 .rise-in { animation: rise-in 0.35s ease-out both; }
+
+@keyframes live-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55); }
+  70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+.live-dot { animation: live-pulse 1.8s ease-out infinite; }
+
+.lux-sidebar {
+  background: radial-gradient(120% 60% at 0% 0%, #0B5E47 0%, transparent 60%), linear-gradient(180deg, #033D2F 0%, #022C22 55%, #011C16 100%);
+}
+.gold-hairline { background: linear-gradient(90deg, transparent, #B8963E, transparent); height: 1px; }
+.lux-card { background: linear-gradient(160deg, #FFFFFF 0%, #F7FBF8 100%); box-shadow: 0 1px 0 rgba(6, 78, 59, 0.05), 0 8px 24px -18px rgba(6, 78, 59, 0.35); }
 
 @media print {
   .no-print { display: none !important; }

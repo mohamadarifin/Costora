@@ -28,3 +28,11 @@ Source workbook: `backend/seed_data/HPP_AGUSTUS_2026.xlsx` (sheets: TENAGA KERJA
 ## Seed facts
 - Sample HPP "Rattan bench 1 (MELENGKUNG)", buyer GOY ARCHITECT, date 2026-10-28, 30 lines; Net 573.444,95 → rounding 574.000 → HPP total 757.680 (matches Excel).
 - Linked packaging form for it (source seed) + standalone packaging "Pacific Urban System – Sofa" (2026-10-21, Loosepack checked).
+
+## Iteration 2 — Approval, emerald theme, real-time dashboard, FinDev
+- signatures collection {id,name,position,stored_name,content_type}; images in backend/uploads/sig_*.png. Routes: GET /api/signatures, POST (multipart name/position/file, perm signature:manage = admin+rnd), GET /{id}/image, DELETE (unlinks from approvals).
+- HPP.approvals {dibuat,diperiksa,diketahui} → signature ids; Packaging.approvals {marketing,dibuat_rnd,mengetahui_rnd}. approval_status computed server-side: draft | partial | approved (all 3). Invalid signature id → 422. PDFs render signature images + names + positions; HPP PDF also shows first image attachment of the HPP.
+- Page /signatures (Template Tanda Tangan). ApprovalPanel on HPP & Packaging editors (pick from dropdown, then Save).
+- Dashboard: auto-refresh every 5 s (Live indicator), 14-day activity area chart, approved KPI, total HPP KPI.
+- Theme: emerald (#047857 / #022C22 sidebar) + gold (#B8963E), headings Playfair Display. Copyright "© FinDev" in sidebar, footer, login, and PDF footers.
+- Seed: 3 SAMPLE (generated) signatures Sholehudin M (Staff R&D), Ucu Moch.R (Supervisor R&D), Haryanto S (Manager R&D); seeded HPP approved with all three.

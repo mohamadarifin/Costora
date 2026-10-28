@@ -7,6 +7,7 @@ from lib.auth import now_iso, require
 from lib.db import db
 from lib.pdf import packaging_pdf
 from models.schemas import Packaging, PackagingIn, new_id
+from routers.signatures import PACKAGING_SLOTS, approval_status, resolve_signatures, validate_approvals
 
 router = APIRouter(prefix="/packaging", tags=["packaging"])
 
@@ -15,6 +16,7 @@ def build_packaging(body: PackagingIn, user_name: str, source: str = "manual", e
     now = now_iso()
     ex = existing or {}
     return Packaging(**body.model_dump(), id=ex.get("id", new_id()), month=body.date[:7], source=ex.get("source", source),
+                     approval_status=approval_status(body.approvals, PACKAGING_SLOTS),
                      created_by=ex.get("created_by", user_name), created_at=ex.get("created_at", now), updated_at=now)
 
 
@@ -49,6 +51,7 @@ async def get_packaging(id: str, _: dict = Depends(require("packaging:read"))):
 @router.post("", response_model=Packaging)
 async def create_packaging(body: PackagingIn, user: dict = Depends(require("packaging:write"))):
     await _check_hpp(body.hpp_id)
+    body.approvals = await validate_approvals(body.approvals, PACKAGING_SLOTS)
     p = build_packaging(body, user["name"])
     await db.packaging.insert_one(p.model_dump())
     return p
@@ -72,6 +75,7 @@ async def update_packaging(id: str, body: PackagingIn, user: dict = Depends(requ
     if not existing:
         raise HTTPException(status_code=404, detail="Packaging form tidak ditemukan")
     await _check_hpp(body.hpp_id)
+    body.approvals = await validate_approvals(body.approvals, PACKAGING_SLOTS)
     p = build_packaging(body, user["name"], existing=existing)
     await db.packaging.replace_one({"id": id}, p.model_dump())
     return p
@@ -92,5 +96,6 @@ async def packaging_pdf_route(id: str, _: dict = Depends(require("packaging:read
     if not doc:
         raise HTTPException(status_code=404, detail="Packaging form tidak ditemukan")
     safe = re.sub(r"[^A-Za-z0-9_-]+", "_", f"{doc['buyer']}_{doc.get('item_name', '')}")[:60]
-    return Response(packaging_pdf(doc), media_type="application/pdf",
+    sigs = await resolve_signatures(doc.get("approvals") or {}, PACKAGING_SLOTS)
+    return Response(packaging_pdf(doc, sigs), media_type="application/pdf",
                     headers={"Content-Disposition": f'inline; filename="Packaging_{safe}.pdf"'})

@@ -31,8 +31,8 @@ export const ROLE_LABELS: Record<Role, string> = { admin: "Admin", marketing: "M
 const READ = ["material:read", "labor:read", "hpp:read", "packaging:read", "report:read"];
 // Mirrors backend/lib/auth.py PERMS — UI hint only, the server enforces.
 export const PERMS: Record<Role, string[]> = {
-  admin: [...READ, "material:write", "labor:write", "hpp:write", "packaging:write", "import", "attachment:write", "user:manage"],
-  rnd: [...READ, "material:write", "labor:write", "hpp:write", "packaging:write", "import", "attachment:write"],
+  admin: [...READ, "material:write", "labor:write", "hpp:write", "packaging:write", "import", "attachment:write", "user:manage", "signature:manage"],
+  rnd: [...READ, "material:write", "labor:write", "hpp:write", "packaging:write", "import", "attachment:write", "signature:manage"],
   marketing: [...READ, "packaging:write", "import", "attachment:write"],
 };
 
@@ -43,3 +43,11 @@ export function errMsg(e: unknown): string {
   if (Array.isArray(d) && d.length) return d.map((x: { loc?: unknown[]; msg?: string }) => `${(x.loc ?? []).slice(-1)}: ${x.msg}`).join(", ");
   return e instanceof Error ? e.message : "Terjadi kesalahan";
 }
+
+export const APPROVAL_LABELS: Record<string, { label: string; cls: string }> = {
+  draft: { label: "Draft", cls: "bg-[#EEF2EF] text-[#4F6359]" },
+  partial: { label: "Proses approval", cls: "bg-[#FBF3DC] text-[#7A5B12]" },
+  approved: { label: "Approved", cls: "bg-[#D1FAE5] text-[#065F46]" },
+};
+export const HPP_SLOTS = [{ key: "dibuat", label: "Dibuat" }, { key: "diperiksa", label: "Diperiksa" }, { key: "diketahui", label: "Diketahui" }];
+export const PACKAGING_SLOTS = [{ key: "marketing", label: "Marketing" }, { key: "dibuat_rnd", label: "Dibuat R&D" }, { key: "mengetahui_rnd", label: "Mengetahui R&D" }];

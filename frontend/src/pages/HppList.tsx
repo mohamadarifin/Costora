@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import SimpleSelect from "@/components/SimpleSelect";
 import { Empty, PageHeader, Panel } from "@/components/PageBits";
+import { ApprovalBadge } from "@/components/ApprovalPanel";
 import { apiGet, apiUrl } from "@/lib/api";
 import { can, useMe } from "@/lib/auth";
 import { rp } from "@/lib/format";
@@ -38,15 +39,15 @@ export default function HppList() {
         {isLoading ? <p className="text-sm text-muted-foreground">Memuat...</p> : isError || data.length === 0 ? <Empty text="Belum ada data HPP." testId="hpp-empty" /> : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm" data-testid="hpp-table">
-              <thead className="bg-[#F3EFEA] text-left text-xs uppercase text-muted-foreground">
+              <thead className="bg-[#E7F3EC] text-left text-xs uppercase text-muted-foreground">
                 <tr>
                   <th className="px-3 py-2">Code Item</th><th className="px-3 py-2">Buyer</th><th className="px-3 py-2">Colour / Type</th>
-                  <th className="px-3 py-2">Tanggal</th><th className="px-3 py-2 text-right">Net Cost</th><th className="px-3 py-2 text-right">HPP Total</th><th className="px-3 py-2" />
+                  <th className="px-3 py-2">Tanggal</th><th className="px-3 py-2">Approval</th><th className="px-3 py-2 text-right">Net Cost</th><th className="px-3 py-2 text-right">HPP Total</th><th className="px-3 py-2" />
                 </tr>
               </thead>
               <tbody>
                 {data.map((h) => (
-                  <tr key={h.id} className="border-t transition-colors hover:bg-[#F9F7F4]" data-testid={`hpp-row-${h.id}`}>
+                  <tr key={h.id} className="border-t transition-colors hover:bg-[#F0F7F3]" data-testid={`hpp-row-${h.id}`}>
                     <td className="px-3 py-2.5">
                       <Link to={`/hpp/${h.id}`} className="font-medium text-foreground hover:text-primary hover:underline" data-testid={`hpp-open-${h.id}`}>{h.code_item}</Link>
                       {h.source !== "manual" && <Badge variant="outline" className="ml-2 text-[10px]">{h.source}</Badge>}
@@ -54,6 +55,7 @@ export default function HppList() {
                     <td className="px-3 py-2.5">{h.buyer}</td>
                     <td className="px-3 py-2.5 text-muted-foreground">{[h.colour, h.type].filter(Boolean).join(" · ")}</td>
                     <td className="num px-3 py-2.5 text-xs">{h.date}</td>
+                    <td className="px-3 py-2.5"><ApprovalBadge status={h.approval_status} testId={`hpp-approval-${h.id}`} /></td>
                     <td className="num px-3 py-2.5 text-right">{rp(h.totals.net_cost)}</td>
                     <td className="num px-3 py-2.5 text-right font-semibold">{rp(h.totals.hpp_total)}</td>
                     <td className="px-3 py-2.5 text-right">

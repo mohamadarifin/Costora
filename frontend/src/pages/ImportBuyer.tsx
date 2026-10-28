@@ -42,14 +42,14 @@ export default function ImportBuyer() {
       <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
         <Panel title="1. File & lampiran" testId="import-panel">
           <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); if (!file) { toast.error("Pilih file Excel terlebih dahulu"); return; } run.mutate(); }}>
-            <label className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-[#D6CBBE] bg-[#FBF9F5] px-6 py-8 text-center transition-colors hover:border-[#C47B2B]" data-testid="import-file-dropzone">
-              <FileSpreadsheet className="size-8 text-[#8C5824]" />
+            <label className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-[#A7CDB8] bg-[#F6FBF8] px-6 py-8 text-center transition-colors hover:border-[#B8963E]" data-testid="import-file-dropzone">
+              <FileSpreadsheet className="size-8 text-[#047857]" />
               <span className="text-sm font-medium">{file ? file.name : "Pilih file Excel HPP buyer (.xlsx)"}</span>
               <span className="text-xs text-muted-foreground">Label yang dibaca: CODE ITEM, COLOUR, BUYER, TYPE, DATE, DIMENTIONS, dan blok “TOTAL PRICE …”</span>
               <input type="file" accept=".xlsx,.xlsm" hidden onChange={(e) => setFile(e.target.files?.[0] ?? null)} data-testid="import-file-input" />
             </label>
-            <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed px-4 py-4 transition-colors hover:border-[#C47B2B]" data-testid="import-attachments-dropzone">
-              <ImagePlus className="size-6 text-[#8C5824]" />
+            <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed px-4 py-4 transition-colors hover:border-[#B8963E]" data-testid="import-attachments-dropzone">
+              <ImagePlus className="size-6 text-[#047857]" />
               <div className="text-sm">
                 <p className="font-medium">{atts.length ? `${atts.length} lampiran dipilih` : "Lampiran: foto/scan packaging form, gambar produk, PDF"}</p>
                 <p className="text-xs text-muted-foreground">{atts.map((a) => a.name).join(", ") || "Opsional · bisa pilih beberapa file"}</p>
@@ -81,7 +81,7 @@ export default function ImportBuyer() {
             <div className="space-y-3 text-sm" data-testid="import-result">
               <p className="flex items-center gap-2 font-medium text-[#15803D]"><CheckCircle2 className="size-4" /> Import selesai</p>
               <p><span className="num">{result.lines_imported}</span> baris HPP · <span className="num">{result.attachments}</span> lampiran</p>
-              {result.warnings.map((w) => <p key={w} className="flex gap-2 rounded-md bg-[#FEF3C7] p-2 text-xs text-[#92400E]"><TriangleAlert className="size-4 shrink-0" />{w}</p>)}
+              {result.warnings.map((w) => <p key={w} className="flex gap-2 rounded-md bg-[#D1FAE5] p-2 text-xs text-[#065F46]"><TriangleAlert className="size-4 shrink-0" />{w}</p>)}
               <div className="flex flex-col gap-2">
                 <Link to={`/hpp/${result.hpp_id}`} className={buttonVariants({ size: "sm" })} data-testid="import-open-hpp">Buka lembar HPP</Link>
                 <Link to={`/packaging/${result.packaging_id}`} className={buttonVariants({ variant: "outline", size: "sm" })} data-testid="import-open-packaging">Buka Packaging Form</Link>

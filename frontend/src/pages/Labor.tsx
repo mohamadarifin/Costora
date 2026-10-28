@@ -35,13 +35,13 @@ function GroupDialog({ group, years, onClose }: { group: LaborGroup | null; year
         <Input value={g.name} onChange={(e) => setG({ ...g, name: e.target.value })} placeholder="Nama pekerjaan (mis. Weaving Peel)" data-testid="labor-input-name" />
         <div className="overflow-x-auto rounded-md border">
           <table className="text-xs">
-            <thead className="bg-[#F3EFEA]">
+            <thead className="bg-[#E7F3EC]">
               <tr>
-                <th className="sticky left-0 min-w-52 bg-[#F3EFEA] px-2 py-2 text-left">Item / Satuan</th>
+                <th className="sticky left-0 min-w-52 bg-[#E7F3EC] px-2 py-2 text-left">Item / Satuan</th>
                 {years.map((y) => (
                   <th key={y} className="min-w-24 px-1 py-2">
                     <div className="flex items-center justify-center gap-1">{y}
-                      <button type="button" title={`Hitung ${y} dari ${Number(y) - 1}`} onClick={() => recalc(y)} className="rounded p-0.5 text-[#8C5824] transition-colors hover:bg-[#FEF3C7]" data-testid={`labor-recalc-${y}`}><RefreshCw className="size-3" /></button>
+                      <button type="button" title={`Hitung ${y} dari ${Number(y) - 1}`} onClick={() => recalc(y)} className="rounded p-0.5 text-[#047857] transition-colors hover:bg-[#D1FAE5]" data-testid={`labor-recalc-${y}`}><RefreshCw className="size-3" /></button>
                     </div>
                   </th>
                 ))}
@@ -49,8 +49,8 @@ function GroupDialog({ group, years, onClose }: { group: LaborGroup | null; year
               </tr>
             </thead>
             <tbody>
-              <tr className="border-t bg-[#FEF3C7]/40">
-                <td className="sticky left-0 bg-[#FFFBEB] px-2 py-1 font-semibold">KENAIKAN %</td>
+              <tr className="border-t bg-[#D1FAE5]/40">
+                <td className="sticky left-0 bg-[#ECFDF5] px-2 py-1 font-semibold">KENAIKAN %</td>
                 {years.map((y) => (
                   <td key={y} className="px-1 py-1">
                     <Input type="number" step="any" className="num h-7 text-right text-xs" value={Math.round((g.increases[y] ?? 0) * 10000) / 100} data-testid={`labor-inc-${y}`}
@@ -120,9 +120,9 @@ export default function Labor() {
         {isError || data.length === 0 ? <Empty text="Belum ada data upah." testId="labor-empty" /> : (
           <div className="max-h-[70vh] overflow-auto">
             <table className="w-full text-xs" data-testid="labor-table">
-              <thead className="sticky top-0 z-10 bg-[#F3EFEA] text-[11px] uppercase text-muted-foreground">
+              <thead className="sticky top-0 z-10 bg-[#E7F3EC] text-[11px] uppercase text-muted-foreground">
                 <tr>
-                  <th className="sticky left-0 z-10 min-w-64 bg-[#F3EFEA] px-3 py-2 text-left">No · Wages</th>
+                  <th className="sticky left-0 z-10 min-w-64 bg-[#E7F3EC] px-3 py-2 text-left">No · Wages</th>
                   {years.map((y) => <th key={y} className="px-2 py-2 text-right">{y}</th>)}
                   <th className="min-w-44 px-3 py-2 text-left">Unit</th>
                 </tr>
@@ -130,10 +130,10 @@ export default function Labor() {
               <tbody>
                 {data.map((g) => (
                   <Fragment key={g.id}>
-                    <tr className="border-t-2 border-[#E6E2DB] bg-[#FFFBEB]" data-testid={`labor-group-${g.id}`}>
-                      <td className="sticky left-0 bg-[#FFFBEB] px-3 py-1.5">
+                    <tr className="border-t-2 border-[#E6E2DB] bg-[#ECFDF5]" data-testid={`labor-group-${g.id}`}>
+                      <td className="sticky left-0 bg-[#ECFDF5] px-3 py-1.5">
                         <div className="flex items-center justify-between gap-2">
-                          <span><span className="num mr-2 text-muted-foreground">{g.no}</span><span className="font-semibold text-foreground">{g.name}</span> <span className="text-[10px] text-[#92400E]">kenaikan %</span></span>
+                          <span><span className="num mr-2 text-muted-foreground">{g.no}</span><span className="font-semibold text-foreground">{g.name}</span> <span className="text-[10px] text-[#065F46]">kenaikan %</span></span>
                           {editable && (
                             <span className="flex">
                               <Button size="icon-xs" variant="ghost" onClick={() => setEdit(g)} data-testid={`labor-edit-${g.id}`}><Pencil className="size-3.5" /></Button>
@@ -142,11 +142,11 @@ export default function Labor() {
                           )}
                         </div>
                       </td>
-                      {years.map((y) => <td key={y} className="num px-2 py-1.5 text-right text-[#92400E]">{pctTxt(g.increases[y])}</td>)}
+                      {years.map((y) => <td key={y} className="num px-2 py-1.5 text-right text-[#065F46]">{pctTxt(g.increases[y])}</td>)}
                       <td />
                     </tr>
                     {g.items.map((it) => (
-                      <tr key={it.id} className="border-t transition-colors hover:bg-[#F9F7F4]">
+                      <tr key={it.id} className="border-t transition-colors hover:bg-[#F0F7F3]">
                         <td className="sticky left-0 bg-card px-3 py-1.5 pl-8">{it.label}</td>
                         {years.map((y) => <td key={y} className="num px-2 py-1.5 text-right">{it.rates[y] == null ? "—" : fnum(it.rates[y], 0)}</td>)}
                         <td className="px-3 py-1.5 text-muted-foreground">{it.unit}</td>

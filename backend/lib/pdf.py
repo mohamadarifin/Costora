@@ -6,14 +6,16 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 from lib.hpp_calc import SECTIONS
 from lib.packaging_options import DETAIL_LABELS, GROUPS
 
-BROWN = colors.HexColor("#8C5824")
-HEAD_BG = colors.HexColor("#F3EFEA")
-TOTAL_BG = colors.HexColor("#FEF3C7")
+BROWN = colors.HexColor("#065F46")
+GOLD = colors.HexColor("#B8963E")
+HEAD_BG = colors.HexColor("#E7F3EC")
+TOTAL_BG = colors.HexColor("#D1FAE5")
+COPYRIGHT = "© FinDev — Sistem HPP PT Balagi Rattan"
 COMPANY = "PT BALAGI RATTAN"
 ADDRESS = "Jl. Raya Kanci KM 9 Kec. Astanajapura, Cirebon 45181, Jawa Barat, Indonesia"
 
@@ -54,16 +56,61 @@ def _grid(data, widths, header=True, total_rows: tuple[int, ...] = ()):
 def _build(story, pagesize=A4) -> bytes:
     buf = BytesIO()
     doc = SimpleDocTemplate(buf, pagesize=pagesize, leftMargin=14 * mm, rightMargin=14 * mm, topMargin=12 * mm, bottomMargin=12 * mm)
-    doc.build(story)
+    def footer(canvas, d):
+        canvas.saveState()
+        canvas.setStrokeColor(GOLD)
+        canvas.line(d.leftMargin, 9 * mm, d.pagesize[0] - d.rightMargin, 9 * mm)
+        canvas.setFont("Helvetica", 7)
+        canvas.setFillColor(colors.HexColor("#57534E"))
+        canvas.drawString(d.leftMargin, 6 * mm, COPYRIGHT)
+        canvas.drawRightString(d.pagesize[0] - d.rightMargin, 6 * mm, f"Hal. {d.page}")
+        canvas.restoreState()
+
+    doc.build(story, onFirstPage=footer, onLaterPages=footer)
     return buf.getvalue()
+
+
+def signature_block(sigs: list[dict], width: float = 182 * mm) -> Table:
+    """3-column approval block: label, signature image, name, position."""
+    col = width / max(len(sigs), 1)
+    labels, images, names = [], [], []
+    for sg in sigs:
+        labels.append(f"{sg['label']} :")
+        if sg.get("path"):
+            try:
+                im = Image(sg["path"])
+                ratio = min((col - 8 * mm) / im.imageWidth, (18 * mm) / im.imageHeight)
+                im.drawWidth, im.drawHeight = im.imageWidth * ratio, im.imageHeight * ratio
+                images.append(im)
+            except Exception:
+                images.append("")
+        else:
+            images.append("")
+        nm = f"<b>{sg.get('name') or '(belum dipilih)'}</b>" + (f"<br/>{sg['position']}" if sg.get("position") else "")
+        names.append(Paragraph(nm, ParagraphStyle("sig", parent=CELL, alignment=1)))
+    t = Table([labels, images, names], colWidths=[col] * len(sigs), rowHeights=[6 * mm, 22 * mm, None])
+    t.setStyle(TableStyle([("ALIGN", (0, 0), (-1, -1), "CENTER"), ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                           ("FONTSIZE", (0, 0), (-1, 0), 9), ("BOX", (0, 0), (-1, -1), 0.4, colors.HexColor("#BDB5AA")),
+                           ("INNERGRID", (0, 0), (-1, 0), 0.4, colors.HexColor("#BDB5AA")),
+                           ("LINEBEFORE", (1, 0), (-1, -1), 0.4, colors.HexColor("#BDB5AA"))]))
+    return t
 
 
 def _letterhead(title: str) -> list:
     return [Paragraph(COMPANY, H1), Paragraph(ADDRESS, SMALL), Spacer(1, 4), Paragraph(f"<b>{title}</b>", H2)]
 
 
-def hpp_pdf(h: dict) -> bytes:
+def hpp_pdf(h: dict, sigs: list[dict] | None = None, image_path: str | None = None) -> bytes:
     story = _letterhead("PERHITUNGAN HPP")
+    if image_path:
+        try:
+            im = Image(image_path)
+            ratio = min((60 * mm) / im.imageWidth, (40 * mm) / im.imageHeight)
+            im.drawWidth, im.drawHeight = im.imageWidth * ratio, im.imageHeight * ratio
+            im.hAlign = "LEFT"
+            story += [im, Spacer(1, 4)]
+        except Exception:
+            pass
     meta = [
         ["CODE ITEM", h.get("code_item", ""), "BUYER", h.get("buyer", "")],
         ["COLOUR", h.get("colour", ""), "TYPE", h.get("type", "")],
@@ -91,10 +138,12 @@ def hpp_pdf(h: dict) -> bytes:
         [f"HPP TOTAL + {pct} %", rp(totals.get("hpp_total"))],
     ]
     story.append(_grid(summary, [120 * mm, 62 * mm], header=False, total_rows=(3,)))
+    if sigs:
+        story += [Spacer(1, 10), signature_block(sigs)]
     return _build(story)
 
 
-def packaging_pdf(p: dict) -> bytes:
+def packaging_pdf(p: dict, sigs: list[dict] | None = None) -> bytes:
     story = _letterhead("PACKAGING FORM — Research & Development")
     meta = [
         ["Buyer", p.get("buyer", ""), "Date", p.get("date", "")],
@@ -124,6 +173,10 @@ def packaging_pdf(p: dict) -> bytes:
     story.append(Paragraph("Notes", H2))
     story.append(_grid([[Paragraph((p.get("notes") or "-").replace("\n", "<br/>"), CELL)]], [182 * mm], header=False))
     story.append(Spacer(1, 14))
+    if sigs and any(sg.get("name") for sg in sigs):
+        fallback = {"marketing": p.get("sign_marketing", ""), "dibuat_rnd": p.get("sign_dibuat_rnd", ""), "mengetahui_rnd": p.get("sign_mengetahui_rnd", "")}
+        story.append(signature_block([{**sg, "name": sg.get("name") or fallback.get(sg["key"], "")} for sg in sigs]))
+        return _build(story)
     sign = [["Marketing,", "Dibuat R&D,", "Mengetahui R&D,"], ["\n\n\n", "", ""],
             [p.get("sign_marketing", ""), p.get("sign_dibuat_rnd", ""), p.get("sign_mengetahui_rnd", "")]]
     st = Table(sign, colWidths=[61 * mm] * 3)

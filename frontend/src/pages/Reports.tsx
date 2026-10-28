@@ -42,7 +42,7 @@ function SummaryTable<T extends { count: number; total_net: number; total_hpp: n
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm" data-testid={testId}>
-        <thead className="bg-[#F3EFEA] text-left text-xs uppercase text-muted-foreground">
+        <thead className="bg-[#E7F3EC] text-left text-xs uppercase text-muted-foreground">
           <tr><th className="w-8" /><th className="px-3 py-2">{head}</th><th className="px-3 py-2 text-right">Jml HPP</th><th className="px-3 py-2 text-right">Packaging</th>
             <th className="px-3 py-2 text-right">Total Net Cost</th><th className="px-3 py-2 text-right">Total HPP</th><th className="px-3 py-2 text-right">Rata-rata</th></tr>
         </thead>
@@ -51,7 +51,7 @@ function SummaryTable<T extends { count: number; total_net: number; total_hpp: n
             const k = keyOf(r);
             return (
               <Fragment key={k}>
-                <tr className="cursor-pointer border-t transition-colors hover:bg-[#F9F7F4]" onClick={() => setOpen({ ...open, [k]: !open[k] })} data-testid={`${testId}-row-${k}`}>
+                <tr className="cursor-pointer border-t transition-colors hover:bg-[#F0F7F3]" onClick={() => setOpen({ ...open, [k]: !open[k] })} data-testid={`${testId}-row-${k}`}>
                   <td className="pl-2 text-muted-foreground">{open[k] ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}</td>
                   <td className="px-3 py-2 font-medium">{name(r)}</td>
                   <td className="num px-3 py-2 text-right">{r.count}</td>
@@ -60,11 +60,11 @@ function SummaryTable<T extends { count: number; total_net: number; total_hpp: n
                   <td className="num px-3 py-2 text-right font-semibold">{rp(r.total_hpp)}</td>
                   <td className="num px-3 py-2 text-right">{rp(r.count ? r.total_hpp / r.count : 0)}</td>
                 </tr>
-                {open[k] && <tr className="bg-[#FBF9F5]"><td /><td colSpan={6} className="px-3 py-2"><ItemsTable items={r.items} /></td></tr>}
+                {open[k] && <tr className="bg-[#F6FBF8]"><td /><td colSpan={6} className="px-3 py-2"><ItemsTable items={r.items} /></td></tr>}
               </Fragment>
             );
           })}
-          <tr className="border-t-2 bg-[#FEF3C7] font-semibold text-[#78350F]">
+          <tr className="border-t-2 bg-[#D1FAE5] font-semibold text-[#064E3B]">
             <td /><td className="px-3 py-2">TOTAL</td><td className="num px-3 py-2 text-right">{tc}</td>
             <td className="num px-3 py-2 text-right">{rows.reduce((a, r) => a + r.packaging_count, 0)}</td>
             <td className="num px-3 py-2 text-right">{rp(rows.reduce((a, r) => a + r.total_net, 0))}</td>
@@ -123,11 +123,11 @@ export default function Reports() {
                 <div className="no-print mb-4 h-56">
                   <ResponsiveContainer>
                     <BarChart data={bRows}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#E7E2DA" vertical={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#DCE9E1" vertical={false} />
                       <XAxis dataKey="buyer" tick={{ fontSize: 11 }} />
                       <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => `${Math.round(v / 1000)}k`} width={56} />
                       <Tooltip formatter={(v: number) => rp(v)} />
-                      <Bar dataKey="total_hpp" fill="#8C5824" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="total_hpp" fill="#047857" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -143,11 +143,11 @@ export default function Reports() {
                 <div className="no-print mb-4 h-56">
                   <ResponsiveContainer>
                     <BarChart data={mRows.map((r) => ({ ...r, label: monthShort(r.month) }))}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#E7E2DA" vertical={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#DCE9E1" vertical={false} />
                       <XAxis dataKey="label" tick={{ fontSize: 11 }} />
                       <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => `${Math.round(v / 1000)}k`} width={56} />
                       <Tooltip formatter={(v: number) => rp(v)} />
-                      <Bar dataKey="total_hpp" fill="#C47B2B" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="total_hpp" fill="#B8963E" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

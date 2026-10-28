@@ -10,16 +10,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import SimpleSelect from "@/components/SimpleSelect";
 import AttachmentPanel from "@/components/AttachmentPanel";
+import ApprovalPanel from "@/components/ApprovalPanel";
 import { Empty, PageHeader, Panel } from "@/components/PageBits";
 import { apiDelete, apiGet, apiPost, apiPut, apiUrl } from "@/lib/api";
 import { can, useMe } from "@/lib/auth";
-import { errMsg } from "@/lib/format";
+import { PACKAGING_SLOTS, errMsg } from "@/lib/format";
 import { DETAIL_FIELDS, PACKAGING_GROUPS } from "@/lib/packaging";
 import type { HppSummary, Packaging, PackagingIn } from "@/lib/types";
 
 const EMPTY: PackagingIn = {
   hpp_id: null, buyer: "", item_name: "", color: "", po_no: "", date: new Date().toISOString().slice(0, 10), etd: "", produksi_sample: "",
-  ros_rop: "", keterangan: "", checks: [], details: {}, marking: false, label: false, notes: "", sign_marketing: "", sign_dibuat_rnd: "", sign_mengetahui_rnd: "",
+  ros_rop: "", keterangan: "", checks: [], details: {}, marking: false, label: false, notes: "", sign_marketing: "", sign_dibuat_rnd: "", sign_mengetahui_rnd: "", approvals: {},
 };
 
 type TextKey = "buyer" | "item_name" | "color" | "po_no" | "etd" | "produksi_sample" | "ros_rop" | "keterangan";
@@ -99,7 +100,7 @@ function PackagingFormView({ initial, id }: { initial: PackagingIn; id: string |
                 {g.options.map((o) => {
                   const on = f.checks.includes(o.key);
                   return (
-                    <div key={o.key} className={`rounded-md border px-3 py-2 transition-colors ${on ? "border-[#C47B2B] bg-[#FEF3C7]/50" : "bg-card"}`}>
+                    <div key={o.key} className={`rounded-md border px-3 py-2 transition-colors ${on ? "border-[#B8963E] bg-[#D1FAE5]/50" : "bg-card"}`}>
                       <label className="flex cursor-pointer items-center gap-2 text-sm">
                         <Checkbox checked={on} onCheckedChange={(c: boolean) => toggle(o.key, c)} disabled={!editable} data-testid={`packaging-check-${o.key}`} />
                         {o.label}
@@ -141,7 +142,10 @@ function PackagingFormView({ initial, id }: { initial: PackagingIn; id: string |
             </div>
           </Panel>
 
-          <Panel title="Tanda tangan" testId="packaging-signatures">
+          <ApprovalPanel slots={PACKAGING_SLOTS} value={f.approvals ?? {}} onChange={(v) => set("approvals", v)} disabled={!editable} testPrefix="packaging"
+            status={PACKAGING_SLOTS.every((s) => f.approvals?.[s.key]) ? "approved" : PACKAGING_SLOTS.some((s) => f.approvals?.[s.key]) ? "partial" : "draft"} />
+
+          <Panel title="Nama penandatangan manual (opsional, jika tanpa template)" testId="packaging-signatures">
             <div className="grid gap-4 md:grid-cols-3">
               {([["sign_marketing", "Marketing"], ["sign_dibuat_rnd", "Dibuat R&D"], ["sign_mengetahui_rnd", "Mengetahui R&D"]] as const).map(([k, l]) => (
                 <div key={k} className="space-y-1 text-center">

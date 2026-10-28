@@ -11,10 +11,11 @@ import { Badge } from "@/components/ui/badge";
 import SimpleSelect from "@/components/SimpleSelect";
 import ItemPicker, { type Picked } from "@/components/ItemPicker";
 import AttachmentPanel from "@/components/AttachmentPanel";
+import ApprovalPanel from "@/components/ApprovalPanel";
 import { Empty, PageHeader, Panel } from "@/components/PageBits";
 import { apiDelete, apiGet, apiPost, apiPut, apiUrl } from "@/lib/api";
 import { can, useMe } from "@/lib/auth";
-import { SECTIONS, errMsg, fnum, rp } from "@/lib/format";
+import { HPP_SLOTS, SECTIONS, errMsg, fnum, rp } from "@/lib/format";
 import type { Hpp, HppIn, HppLine, LaborGroup, Packaging, SectionKey } from "@/lib/types";
 
 const uid = () => crypto.randomUUID();
@@ -33,7 +34,7 @@ function computeTotals(lines: HppLine[], markup: number) {
   return { sections, net, rounding, ongkos: (net - sections.upah_kerja) * markup + rounding, hpp: rounding * (1 + markup) };
 }
 
-const EMPTY: HppIn = { code_item: "", colour: "", buyer: "", type: "", date: todayLocal(), tw: 0, td: 0, th: 0, labor_year: new Date().getFullYear(), markup: 0.32, notes: "", lines: [] };
+const EMPTY: HppIn = { code_item: "", colour: "", buyer: "", type: "", date: todayLocal(), tw: 0, td: 0, th: 0, labor_year: new Date().getFullYear(), markup: 0.32, notes: "", lines: [], approvals: {} };
 
 function NumInput({ value, onChange, testId, disabled, className = "" }: { value: number; onChange: (v: number) => void; testId: string; disabled?: boolean; className?: string }) {
   const [txt, setTxt] = useState(String(value ?? 0));
@@ -157,7 +158,7 @@ function HppForm({ initial, id }: { initial: HppIn; id: string | null }) {
           const lines = form.lines.filter((l) => l.section === s.key);
           return (
             <Panel key={s.key} testId={`hpp-section-${s.key}`}
-              title={<span className="flex items-center gap-3">Total Price {s.label}<span className="num rounded bg-[#FEF3C7] px-2 py-0.5 text-[13px] font-medium text-[#78350F]" data-testid={`hpp-section-total-${s.key}`}>{rp(t.sections[s.key])}</span></span>}
+              title={<span className="flex items-center gap-3">Total Price {s.label}<span className="num rounded bg-[#D1FAE5] px-2 py-0.5 text-[13px] font-medium text-[#064E3B]" data-testid={`hpp-section-total-${s.key}`}>{rp(t.sections[s.key])}</span></span>}
               action={editable && (
                 <div className="flex gap-2">
                   <Button size="xs" variant="outline" onClick={() => setPicker(s.key)} data-testid={`hpp-add-from-db-${s.key}`}><Database className="size-3.5" /> Dari database</Button>
@@ -196,6 +197,11 @@ function HppForm({ initial, id }: { initial: HppIn; id: string | null }) {
         })}
       </div>
 
+      <div className="mt-4">
+        <ApprovalPanel slots={HPP_SLOTS} value={form.approvals ?? {}} onChange={(v) => set("approvals", v)} disabled={!editable} testPrefix="hpp"
+          status={HPP_SLOTS.every((s) => form.approvals?.[s.key]) ? "approved" : HPP_SLOTS.some((s) => form.approvals?.[s.key]) ? "partial" : "draft"} />
+      </div>
+
       {id && (
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <Panel title="Packaging Form terkait" testId="hpp-linked-packaging"
@@ -219,7 +225,7 @@ function HppForm({ initial, id }: { initial: HppIn; id: string | null }) {
         defaultTab={picker === "upah_kerja" ? "labor" : "material"}
         onPick={(p) => { if (picker) addLine(picker, p); setPicker(null); toast.success(`${p.item} ditambahkan`); }} />
 
-      <div className="no-print fixed right-0 bottom-0 left-0 z-20 border-t bg-[#1E1A16]/95 text-white backdrop-blur md:left-60" data-testid="hpp-summary-bar">
+      <div className="no-print fixed right-0 bottom-0 left-0 z-20 border-t bg-gradient-to-r from-[#022C22]/95 to-[#064E3B]/95 text-white backdrop-blur md:left-60" data-testid="hpp-summary-bar">
         <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-8 gap-y-2 px-4 py-3 md:px-6">
           {[["Total Net Cost", t.net, "net"], ["Rounding", t.rounding, "rounding"], [`Ongkos Bahan + ${pct}%`, t.ongkos, "ongkos"]].map(([l, v, k]) => (
             <div key={k as string}>
@@ -227,13 +233,13 @@ function HppForm({ initial, id }: { initial: HppIn; id: string | null }) {
               <p className="num text-sm" data-testid={`hpp-summary-${k}`}>{rp(v as number)}</p>
             </div>
           ))}
-          <div className="rounded-md bg-[#F59E0B] px-3 py-1 text-[#1E1A16]">
+          <div className="rounded-md bg-[#E6C878] px-3 py-1 text-[#022C22]">
             <p className="text-[10px] font-semibold uppercase tracking-wider">HPP Total + {pct}%</p>
             <p className="num text-lg font-semibold" data-testid="hpp-summary-hpp">{rp(t.hpp)}</p>
           </div>
           <span className="text-xs text-[#A8A29E]">{form.lines.length} baris · dimensi {fnum(form.tw)}×{fnum(form.td)}×{fnum(form.th)} m</span>
           {editable && (
-            <Button className="ml-auto bg-[#C47B2B] hover:bg-[#A9661F]" onClick={() => save.mutate()} disabled={save.isPending} data-testid="hpp-save-button">
+            <Button className="ml-auto bg-[#B8963E] hover:bg-[#9C7C2E]" onClick={() => save.mutate()} disabled={save.isPending} data-testid="hpp-save-button">
               <Save className="size-4" /> {save.isPending ? "Menyimpan..." : "Simpan HPP"}
             </Button>
           )}

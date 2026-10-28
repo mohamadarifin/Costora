@@ -36,9 +36,9 @@ export default function Login() {
     <div className="grid min-h-screen lg:grid-cols-[1.15fr_1fr]">
       <div className="relative hidden overflow-hidden lg:block">
         <img src="https://images.unsplash.com/photo-1534953342533-7711c98712be?crop=entropy&cs=srgb&fm=jpg&q=80&w=1600" alt="Pengrajin rotan" className="absolute inset-0 size-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1E1A16] via-[#1E1A16]/55 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#022C22] via-[#022C22]/60 to-transparent" />
         <div className="absolute bottom-0 left-0 max-w-xl p-12 text-white">
-          <p className="mb-3 text-xs uppercase tracking-[0.2em] text-[#F59E0B]">PT Balagi Rattan · Cirebon</p>
+          <p className="mb-3 text-xs uppercase tracking-[0.2em] text-[#E6C878]">PT Balagi Rattan · Cirebon</p>
           <h1 className="text-4xl font-semibold leading-tight">Harga Pokok Produksi, dari serat rotan sampai kontainer.</h1>
           <p className="mt-4 text-sm text-[#E7E5E4]">Database material, upah tenaga kerja per tahun, packaging form dan laporan buyer — dalam satu sistem R&amp;D.</p>
         </div>
@@ -46,7 +46,7 @@ export default function Login() {
       <div className="flex items-center justify-center bg-background p-6">
         <div className="rise-in w-full max-w-sm">
           <div className="mb-8 flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-md bg-[#8C5824] font-heading text-xl font-bold text-white">B</div>
+            <div className="grid size-10 place-items-center rounded-md bg-[#047857] font-heading text-xl font-bold text-white">B</div>
             <div>
               <p className="font-heading text-lg font-semibold">Balagi HPP System</p>
               <p className="text-xs text-muted-foreground">Masuk untuk melanjutkan</p>
@@ -74,6 +74,7 @@ export default function Login() {
               ))}
             </div>
           </div>
+          <p className="mt-8 text-center text-xs text-muted-foreground" data-testid="login-copyright">© {new Date().getFullYear()} <span className="font-semibold text-[#065F46]">FinDev</span>. All rights reserved.</p>
         </div>
       </div>
     </div>

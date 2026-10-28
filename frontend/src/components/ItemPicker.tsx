@@ -39,12 +39,12 @@ export default function ItemPicker({ open, onOpenChange, onPick, laborYear, defa
           <TabsContent value="material">
             <div className="max-h-[52vh] overflow-y-auto rounded-md border">
               <table className="w-full text-sm">
-                <thead className="sticky top-0 bg-[#F3EFEA] text-left text-xs uppercase text-muted-foreground">
+                <thead className="sticky top-0 bg-[#E7F3EC] text-left text-xs uppercase text-muted-foreground">
                   <tr><th className="px-3 py-2">Item</th><th className="px-3 py-2">Size</th><th className="px-3 py-2">Kategori</th><th className="px-3 py-2">Unit</th><th className="px-3 py-2 text-right">Price</th></tr>
                 </thead>
                 <tbody>
                   {(mats.data?.items ?? []).map((m) => (
-                    <tr key={m.id} className="cursor-pointer border-t transition-colors hover:bg-[#F5EFE6]" data-testid={`item-picker-material-${m.id}`}
+                    <tr key={m.id} className="cursor-pointer border-t transition-colors hover:bg-[#E6F4EC]" data-testid={`item-picker-material-${m.id}`}
                       onClick={() => onPick({ item: m.item.trim() + (m.size ? ` ${m.size}` : ""), unit: m.unit, price: m.price, material_id: m.id, labor_ref: null })}>
                       <td className="px-3 py-1.5 font-medium">{m.item}</td>
                       <td className="px-3 py-1.5 text-muted-foreground">{m.size}</td>
@@ -61,7 +61,7 @@ export default function ItemPicker({ open, onOpenChange, onPick, laborYear, defa
           <TabsContent value="labor">
             <div className="max-h-[52vh] overflow-y-auto rounded-md border">
               <table className="w-full text-sm">
-                <thead className="sticky top-0 bg-[#F3EFEA] text-left text-xs uppercase text-muted-foreground">
+                <thead className="sticky top-0 bg-[#E7F3EC] text-left text-xs uppercase text-muted-foreground">
                   <tr><th className="px-3 py-2">Pekerjaan</th><th className="px-3 py-2">Satuan</th><th className="px-3 py-2 text-right">Tarif {y}</th></tr>
                 </thead>
                 <tbody>
@@ -70,7 +70,7 @@ export default function ItemPicker({ open, onOpenChange, onPick, laborYear, defa
                     const label = it.label === g.name ? g.name : `${g.name} — ${it.label}`;
                     const price = it.rates[y] ?? 0;
                     return (
-                      <tr key={it.id} className="cursor-pointer border-t transition-colors hover:bg-[#F5EFE6]" data-testid={`item-picker-labor-${it.id}`}
+                      <tr key={it.id} className="cursor-pointer border-t transition-colors hover:bg-[#E6F4EC]" data-testid={`item-picker-labor-${it.id}`}
                         onClick={() => onPick({ item: label, unit: it.unit, price, material_id: null, labor_ref: it.id })}>
                         <td className="px-3 py-1.5 font-medium">{label}</td>
                         <td className="px-3 py-1.5 text-xs text-muted-foreground">{it.unit}</td>

@@ -129,12 +129,14 @@ class HppIn(BaseModel):
     markup: float = Field(default=0.32, ge=0, le=5)
     notes: str = ""
     lines: list[HppLine] = []
+    approvals: dict[str, Optional[str]] = {}
 
 
 class Hpp(HppIn):
     id: str = Field(default_factory=new_id)
     month: str = ""
     totals: HppTotals = HppTotals()
+    approval_status: str = "draft"
     source: str = "manual"
     created_by: str = ""
     created_at: str = ""
@@ -150,6 +152,7 @@ class HppSummary(BaseModel):
     date: str
     month: str
     totals: HppTotals
+    approval_status: str = "draft"
     source: str = "manual"
     created_by: str = ""
     updated_at: str = ""
@@ -175,11 +178,13 @@ class PackagingIn(BaseModel):
     sign_marketing: str = ""
     sign_dibuat_rnd: str = ""
     sign_mengetahui_rnd: str = ""
+    approvals: dict[str, Optional[str]] = {}
 
 
 class Packaging(PackagingIn):
     id: str = Field(default_factory=new_id)
     month: str = ""
+    approval_status: str = "draft"
     source: str = "manual"
     created_by: str = ""
     created_at: str = ""
@@ -236,7 +241,26 @@ class SectionPoint(BaseModel):
     total: float
 
 
+class ActivityPoint(BaseModel):
+    date: str
+    hpp: int
+    packaging: int
+
+
+class Signature(BaseModel):
+    id: str = Field(default_factory=new_id)
+    name: str
+    position: str = ""
+    stored_name: str = ""
+    content_type: str = ""
+    created_by: str = ""
+    created_at: str = ""
+
+
 class Dashboard(BaseModel):
+    activity: list[ActivityPoint] = []
+    approved_count: int = 0
+    generated_at: str = ""
     kpis: Kpis
     monthly: list[MonthPoint]
     buyers: list[BuyerPoint]

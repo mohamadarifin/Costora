@@ -9,7 +9,9 @@ from lib.dates import today_iso
 from lib.db import db
 from lib.hpp_calc import SECTION_LABELS
 from lib.pdf import report_pdf
-from models.schemas import BuyerPoint, BuyerReportRow, Dashboard, Kpis, MonthPoint, MonthReportRow, SectionPoint
+from datetime import datetime, timedelta, timezone
+
+from models.schemas import ActivityPoint, BuyerPoint, BuyerReportRow, Dashboard, Kpis, MonthPoint, MonthReportRow, SectionPoint
 from routers.hpp import SUMMARY_PROJ, hpp_filter
 
 router = APIRouter(tags=["reports"])
@@ -50,7 +52,20 @@ async def dashboard(year: str = "", _: dict = Depends(require("report:read"))):
                 material_count=await db.materials.count_documents({}), total_hpp=round(total, 2),
                 avg_hpp=round(total / len(items), 2) if items else 0, month_hpp_count=monthly.get(current_month, [0])[0],
                 current_month=current_month)
+    now = datetime.now(timezone.utc)
+    days = [(now - timedelta(days=i)).date().isoformat() for i in range(13, -1, -1)]
+    since = days[0]
+    act = {d: [0, 0] for d in days}
+    async for d in db.hpp.find({"created_at": {"$gte": since}}, {"_id": 0, "created_at": 1}):
+        if d["created_at"][:10] in act:
+            act[d["created_at"][:10]][0] += 1
+    async for d in db.packaging.find({"created_at": {"$gte": since}}, {"_id": 0, "created_at": 1}):
+        if d["created_at"][:10] in act:
+            act[d["created_at"][:10]][1] += 1
     return Dashboard(
+        activity=[ActivityPoint(date=d, hpp=v[0], packaging=v[1]) for d, v in act.items()],
+        approved_count=sum(1 for it in items if it.get("approval_status") == "approved"),
+        generated_at=now.isoformat(),
         kpis=kpis,
         monthly=[MonthPoint(month=m, count=v[0], total_hpp=round(v[1], 2)) for m, v in sorted(monthly.items())],
         buyers=sorted([BuyerPoint(buyer=b, count=v[0], total_hpp=round(v[1], 2)) for b, v in buyers.items()], key=lambda x: -x.total_hpp)[:10],

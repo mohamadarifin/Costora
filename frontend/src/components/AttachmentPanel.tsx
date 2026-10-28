@@ -56,12 +56,12 @@ export default function AttachmentPanel({ ownerType, ownerId, canWrite, title = 
           {data.map((a) => {
             const isImg = a.content_type.startsWith("image/");
             return (
-              <li key={a.id} className="flex items-center gap-3 rounded-md border bg-[#FBF9F5] p-2" data-testid={`attachment-item-${a.id}`}>
+              <li key={a.id} className="flex items-center gap-3 rounded-md border bg-[#F6FBF8] p-2" data-testid={`attachment-item-${a.id}`}>
                 <a href={apiUrl(`/attachments/${a.id}/file`)} target="_blank" rel="noreferrer" className="shrink-0">
                   {isImg ? (
                     <img src={apiUrl(`/attachments/${a.id}/file`)} alt={a.filename} className="size-14 rounded object-cover" />
                   ) : (
-                    <div className="grid size-14 place-items-center rounded bg-[#F3E8DB] text-[#78350F]">
+                    <div className="grid size-14 place-items-center rounded bg-[#E3F2EA] text-[#064E3B]">
                       {a.filename.toLowerCase().endsWith(".pdf") ? <FileText className="size-6" /> : <ImageIcon className="size-6" />}
                     </div>
                   )}

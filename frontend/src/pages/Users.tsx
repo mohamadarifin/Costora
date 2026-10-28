@@ -64,7 +64,7 @@ export default function UsersPage() {
       <Panel>
         {isError ? <Empty text="Hanya Admin yang dapat mengelola pengguna." testId="users-forbidden" /> : (
           <table className="w-full text-sm" data-testid="users-table">
-            <thead className="bg-[#F3EFEA] text-left text-xs uppercase text-muted-foreground">
+            <thead className="bg-[#E7F3EC] text-left text-xs uppercase text-muted-foreground">
               <tr><th className="px-3 py-2">Nama</th><th className="px-3 py-2">Email</th><th className="px-3 py-2">Peran</th><th className="px-3 py-2">Status</th><th className="w-20" /></tr>
             </thead>
             <tbody>
@@ -72,7 +72,7 @@ export default function UsersPage() {
                 <tr key={u.id} className="border-t" data-testid={`user-row-${u.id}`}>
                   <td className="px-3 py-2 font-medium">{u.name}</td>
                   <td className="px-3 py-2">{u.email}</td>
-                  <td className="px-3 py-2"><Badge className="bg-[#F3E8DB] text-[#78350F]">{ROLE_LABELS[u.role]}</Badge></td>
+                  <td className="px-3 py-2"><Badge className="bg-[#E3F2EA] text-[#064E3B]">{ROLE_LABELS[u.role]}</Badge></td>
                   <td className="px-3 py-2">{u.active ? <Badge className="bg-[#DCFCE7] text-[#14532D]">Aktif</Badge> : <Badge variant="outline">Nonaktif</Badge>}</td>
                   <td className="px-2 py-2 text-right whitespace-nowrap">
                     <Button size="icon-xs" variant="ghost" onClick={() => setEdit(u)} data-testid={`user-edit-${u.id}`}><Pencil className="size-3.5" /></Button>

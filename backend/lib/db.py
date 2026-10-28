@@ -27,6 +27,7 @@ INDEXES: dict[str, list[IndexModel]] = {
             IndexModel([("month", ASCENDING), ("date", DESCENDING)], name="month_date")],
     "packaging": [IndexModel([("id", ASCENDING)], name="id", unique=True), IndexModel([("hpp_id", ASCENDING)], name="hpp_id"),
                   IndexModel([("buyer", ASCENDING), ("month", ASCENDING)], name="buyer_month")],
+    "signatures": [IndexModel([("id", ASCENDING)], name="id", unique=True), IndexModel([("name", ASCENDING)], name="name")],
     "attachments": [IndexModel([("id", ASCENDING)], name="id", unique=True),
                     IndexModel([("owner_type", ASCENDING), ("owner_id", ASCENDING), ("created_at", ASCENDING)], name="owner")],
 }

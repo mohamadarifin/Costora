@@ -16,8 +16,8 @@ ALGO = "HS256"
 
 _READ = {"material:read", "labor:read", "hpp:read", "packaging:read", "report:read"}
 PERMS: dict[str, set[str]] = {
-    "admin": _READ | {"material:write", "labor:write", "hpp:write", "packaging:write", "import", "attachment:write", "user:manage"},
-    "rnd": _READ | {"material:write", "labor:write", "hpp:write", "packaging:write", "import", "attachment:write"},
+    "admin": _READ | {"material:write", "labor:write", "hpp:write", "packaging:write", "import", "attachment:write", "user:manage", "signature:manage"},
+    "rnd": _READ | {"material:write", "labor:write", "hpp:write", "packaging:write", "import", "attachment:write", "signature:manage"},
     "marketing": _READ | {"packaging:write", "import", "attachment:write"},
 }
 

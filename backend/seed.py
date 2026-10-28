@@ -82,6 +82,26 @@ def parse_labor(wb) -> list[LaborGroup]:
     return [g for g in groups if g.items]
 
 
+def make_signature_png(name: str, path: Path, seed: int = 0) -> None:
+    """Sample handwriting-like signature (placeholder until real scans are uploaded)."""
+    import math
+    import random
+    from PIL import Image, ImageDraw
+    rnd = random.Random(seed + 7)
+    img = Image.new("RGBA", (420, 160), (255, 255, 255, 0))
+    dr = ImageDraw.Draw(img)
+    pts = []
+    for i in range(400):
+        t = i / 400
+        x = 30 + 340 * t + 18 * math.sin(t * math.pi * (5 + seed))
+        y = 82 - 38 * math.sin(t * math.pi * (3.5 + seed * 0.6)) * (1 - t * 0.6) + 10 * math.cos(t * math.pi * 9)
+        pts.append((x, y))
+    dr.line(pts, fill=(12, 40, 90, 255), width=4, joint="curve")
+    dr.line([(60, 122), (330, 112)], fill=(12, 40, 90, 255), width=3)
+    dr.text((300, 128), name.split()[0], fill=(12, 40, 90, 200))
+    img.save(path)
+
+
 async def main(reset: bool):
     await ensure_indexes()
     for email, name, role, pw in USERS:
@@ -111,6 +131,21 @@ async def main(reset: bool):
                            notes="Indoor.\nDimensi : W 3400 mm x D 2181 mm x H 700 mm", sign_marketing="Vivian")
         p = build_packaging(sofa, "Seed", source="seed")
         await db.packaging.insert_one(p.model_dump())
+    if await db.signatures.count_documents({}) == 0:
+        from routers.attachments import upload_dir
+        from models.schemas import Signature
+        ids = []
+        for i, (nm, pos) in enumerate([("Sholehudin M", "Staff R&D"), ("Ucu Moch.R", "Supervisor R&D"), ("Haryanto S", "Manager R&D")]):
+            sid = new_id()
+            stored = f"sig_{sid}.png"
+            make_signature_png(nm, upload_dir() / stored, seed=i)
+            await db.signatures.insert_one(Signature(id=sid, name=nm, position=pos, stored_name=stored, content_type="image/png",
+                                                     created_by="Seed", created_at=now_iso()).model_dump())
+            ids.append(sid)
+        h = await db.hpp.find_one({"source": "seed"}, {"_id": 0, "id": 1})
+        if h:
+            await db.hpp.update_one({"id": h["id"]}, {"$set": {"approvals": dict(zip(["dibuat", "diperiksa", "diketahui"], ids)), "approval_status": "approved"}})
+        print("signatures: 3 (contoh)")
     print("seed done")
 
 

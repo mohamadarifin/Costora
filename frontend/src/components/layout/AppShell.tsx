@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink, Navigate, Outlet, useLocation } from "react-router-dom";
 import {
-  BarChart3, Boxes, ClipboardList, FileSpreadsheet, HardHat, LayoutDashboard, LogOut, Menu, PackageCheck, Users,
+  BarChart3, Boxes, PenLine, ClipboardList, FileSpreadsheet, HardHat, LayoutDashboard, LogOut, Menu, PackageCheck, Users,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -20,15 +20,16 @@ const NAV = [
   { to: "/materials", label: "Database Material", icon: Boxes, perm: "material:read", id: "materials" },
   { to: "/labor", label: "Upah Tenaga Kerja", icon: HardHat, perm: "labor:read", id: "labor" },
   { to: "/reports", label: "Laporan", icon: BarChart3, perm: "report:read", id: "reports" },
+  { to: "/signatures", label: "Template Tanda Tangan", icon: PenLine, perm: "report:read", id: "signatures" },
   { to: "/users", label: "Pengguna", icon: Users, perm: "user:manage", id: "users" },
 ];
 
 function SideNav({ user, onNavigate }: { user: UserOut; onNavigate?: () => void }) {
   return (
-    <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
+    <div className="lux-sidebar flex h-full flex-col text-sidebar-foreground">
       <div className="border-b border-sidebar-border px-5 py-5">
         <div className="flex items-center gap-3">
-          <div className="grid size-9 place-items-center rounded-md bg-[#C47B2B] font-heading text-lg font-bold text-white">B</div>
+          <div className="grid size-9 place-items-center rounded-md bg-gradient-to-br from-[#E6C878] to-[#9C7C2E] font-heading text-lg font-bold text-[#022C22] shadow-[0_0_0_1px_rgba(230,200,120,0.4)]">B</div>
           <div>
             <p className="font-heading text-[15px] font-semibold leading-tight">Balagi Rattan</p>
             <p className="text-[11px] uppercase tracking-[0.14em] text-[#A8A29E]">HPP · R&D System</p>
@@ -45,7 +46,7 @@ function SideNav({ user, onNavigate }: { user: UserOut; onNavigate?: () => void 
             data-testid={`nav-${n.id}`}
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-md px-3 py-2 text-[13.5px] transition-[background-color,color] duration-150 ${
-                isActive ? "bg-sidebar-accent font-semibold text-[#F59E0B]" : "text-[#D6D3D1] hover:bg-[#2A241E] hover:text-white"
+                isActive ? "bg-sidebar-accent font-semibold text-[#E6C878]" : "text-[#D6D3D1] hover:bg-[#053D30] hover:text-white"
               }`
             }
           >
@@ -54,8 +55,10 @@ function SideNav({ user, onNavigate }: { user: UserOut; onNavigate?: () => void 
           </NavLink>
         ))}
       </nav>
-      <div className="border-t border-sidebar-border px-5 py-4 text-[11px] leading-relaxed text-[#A8A29E]">
-        PT Balagi Rattan<br />Kanci, Cirebon
+      <div className="px-5 pb-4">
+        <div className="gold-hairline mb-3" />
+        <p className="text-[11px] leading-relaxed text-[#9FB8AC]">PT Balagi Rattan · Kanci, Cirebon</p>
+        <p className="mt-1 text-[11px] font-medium tracking-wide text-[#E6C878]" data-testid="app-copyright">© {new Date().getFullYear()} FinDev. All rights reserved.</p>
       </div>
     </div>
   );
@@ -95,7 +98,7 @@ export default function AppShell() {
               <p className="text-sm font-medium" data-testid="header-user-name">{user.name}</p>
               <p className="text-[11px] text-muted-foreground">{user.email}</p>
             </div>
-            <Badge className="bg-[#FEF3C7] text-[#92400E]" data-testid="header-user-role">{ROLE_LABELS[user.role]}</Badge>
+            <Badge className="bg-[#D1FAE5] text-[#065F46]" data-testid="header-user-role">{ROLE_LABELS[user.role]}</Badge>
             <Button variant="outline" size="sm" onClick={() => endSession()} data-testid="logout-button">
               <LogOut className="size-4" /> Keluar
             </Button>
@@ -103,6 +106,7 @@ export default function AppShell() {
         </header>
         <main className="print-full mx-auto max-w-[1440px] p-4 md:p-6">
           <Outlet />
+          <footer className="no-print mt-10 border-t pt-4 text-center text-xs text-muted-foreground">© {new Date().getFullYear()} <span className="font-semibold text-[#065F46]">FinDev</span> · Sistem HPP PT Balagi Rattan</footer>
         </main>
       </div>
       <Toaster richColors />

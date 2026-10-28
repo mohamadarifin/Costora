@@ -84,16 +84,16 @@ export default function Materials() {
         {isError || !data || data.items.length === 0 ? <Empty text={isError ? "Data tidak dapat dimuat." : "Tidak ada material."} testId="material-empty" /> : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm" data-testid="material-table">
-              <thead className="bg-[#F3EFEA] text-left text-xs uppercase text-muted-foreground">
+              <thead className="bg-[#E7F3EC] text-left text-xs uppercase text-muted-foreground">
                 <tr><th className="px-3 py-2">Item</th><th className="px-3 py-2">Size</th><th className="px-3 py-2">Kategori</th><th className="px-3 py-2 text-right">Price</th>
                   <th className="px-3 py-2 text-right">Price 2</th><th className="px-3 py-2">Unit</th><th className="px-3 py-2">Keterangan</th>{editable && <th className="w-20" />}</tr>
               </thead>
               <tbody>
                 {data.items.map((m) => (
-                  <tr key={m.id} className="border-t transition-colors hover:bg-[#F9F7F4]" data-testid={`material-row-${m.id}`}>
+                  <tr key={m.id} className="border-t transition-colors hover:bg-[#F0F7F3]" data-testid={`material-row-${m.id}`}>
                     <td className="px-3 py-2 font-medium">{m.item}</td>
                     <td className="px-3 py-2 text-muted-foreground">{m.size}</td>
-                    <td className="px-3 py-2"><Badge className="bg-[#F3E8DB] text-[#78350F]">{m.category}</Badge></td>
+                    <td className="px-3 py-2"><Badge className="bg-[#E3F2EA] text-[#064E3B]">{m.category}</Badge></td>
                     <td className="num px-3 py-2 text-right">{rp(m.price)}</td>
                     <td className="num px-3 py-2 text-right text-muted-foreground">{m.price2 != null ? rp(m.price2) : "—"}</td>
                     <td className="px-3 py-2">{m.unit}</td>
