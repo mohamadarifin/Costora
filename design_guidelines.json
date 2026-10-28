@@ -1,0 +1,193 @@
+{
+  "theme": "light",
+  "app_archetype": "ORGANIC_INDUSTRIAL_ERP",
+  "description": "Enterprise HPP (Harga Pokok Produksi) & R&D Packaging ERP System tailored for PT Balagi Rattan (Cirebon, Indonesia), blending natural warm artisanal rattan tones with dense, high-efficiency Swiss engineering grids for multi-category BOM calculation, labor rate indexing (2014-2026), buyer import, and print-ready technical sheets.",
+  "colors": {
+    "palette_name": "Warm Natural Teak & Forest Amber",
+    "primary": "#8C5824",
+    "primary_hover": "#6E4217",
+    "accent": "#C47B2B",
+    "on_accent": "#FFFFFF",
+    "surfaces": [
+      {
+        "name": "page",
+        "kind": "solid",
+        "bg": "#F8F7F4",
+        "on_bg": "#1C1917",
+        "on_bg_muted": "#57534E",
+        "roles": {
+          "border": "#E6E2DB",
+          "link": "#8C5824",
+          "error": "#DC2626",
+          "success": "#15803D",
+          "warning": "#B45309"
+        }
+      },
+      {
+        "name": "panel",
+        "kind": "solid",
+        "bg": "#FFFFFF",
+        "on_bg": "#1C1917",
+        "on_bg_muted": "#605A54",
+        "roles": {
+          "border": "#E7E2DA",
+          "active_row": "#F5EFE6",
+          "subtotal_bg": "#FBF9F5"
+        }
+      },
+      {
+        "name": "sidebar",
+        "kind": "solid",
+        "bg": "#1E1A16",
+        "on_bg": "#FDFBF7",
+        "on_bg_muted": "#A8A29E",
+        "roles": {
+          "active_bg": "#342C24",
+          "active_text": "#F59E0B",
+          "border": "#2E2822"
+        }
+      },
+      {
+        "name": "metric_card",
+        "kind": "solid",
+        "bg": "#FFFFFF",
+        "on_bg": "#1C1917",
+        "on_bg_muted": "#6B655D",
+        "roles": {
+          "accent_pill": "#FEF3C7",
+          "accent_text": "#92400E",
+          "border": "#E7E2DA"
+        }
+      },
+      {
+        "name": "table_header",
+        "kind": "solid",
+        "bg": "#F3EFEA",
+        "on_bg": "#292524",
+        "on_bg_muted": "#57534E"
+      },
+      {
+        "name": "table_total_highlight",
+        "kind": "solid",
+        "bg": "#FEF3C7",
+        "on_bg": "#78350F",
+        "on_bg_muted": "#92400E"
+      },
+      {
+        "name": "print_sheet",
+        "kind": "solid",
+        "bg": "#FFFFFF",
+        "on_bg": "#000000",
+        "on_bg_muted": "#333333",
+        "roles": {
+          "border": "#000000"
+        }
+      },
+      {
+        "name": "badge_rattan",
+        "kind": "solid",
+        "bg": "#F3E8DB",
+        "on_bg": "#78350F",
+        "on_bg_muted": "#92400E"
+      },
+      {
+        "name": "badge_success",
+        "kind": "solid",
+        "bg": "#DCFCE7",
+        "on_bg": "#14532D",
+        "on_bg_muted": "#166534"
+      }
+    ]
+  },
+  "typography": {
+    "font_family_sans": "Plus Jakarta Sans, sans-serif",
+    "font_family_heading": "Outfit, sans-serif",
+    "font_family_mono": "IBM Plex Mono, monospace",
+    "scale_px": {
+      "display": 40,
+      "h1": 32,
+      "h2": 24,
+      "h3": 20,
+      "body": 14,
+      "caption": 12
+    },
+    "guidelines": {
+      "number_formatting": "Always use Indonesian Rupiah format (e.g., Rp 1.450.000 or Rp 12.500) and Indonesian decimal format (,). Use IBM Plex Mono for all numeric tables, currency, dimensions (TW/TD/TH in mm), and volume calculations to preserve tabular digit alignment.",
+      "headings": "Use Outfit font with tracking-tight and semi-bold weight for section cards and sheet headers."
+    }
+  },
+  "entry_surfaces": {
+    "/": "split branded dashboard — sidebar navigation left with Balagi logo, dense KPI tiles and cost calculation workbench right",
+    "/login": "split branded login — warm craft wood photography with Balagi Rattan heritage left, secure credential panel with role switcher (Admin, Marketing, R&D) right"
+  },
+  "layouts": {
+    "app_shell": "Two-column ERP layout: 240px fixed dark walnut sidebar (`bg-[#1E1A16]`) on desktop, collapsible on mobile; sticky header with active buyer context, quick currency toggles (IDR / USD estimation), user role indicator, and quick actions (+ New HPP, + Import Excel, + Packaging Spec); main content viewport with fluid dense padding (`p-6`).",
+    "hpp_form_layout": "Excel-fidelity multi-section workbench: Header Metadata Card (Item Code, Buyer, Color, Model, Dimensions TW/TD/TH mm, Date, Reference Image) -> Interactive Section Accordions/Tables (1. Material Rattan/Wood, 2. Additional Material, 3. Finishing, 4. Packing, 5. Cushion & Foam, 6. Upah Kerja / Labor with Year Picker, 7. Out Sourcing) -> Sticky Bottom Cost Summary Bar (Total Net Cost, Rounding Factor, HPP +32% Profit Margin, FOB Price Estimate).",
+    "packaging_form_layout": "Standardized R&D Packaging Technical Spec matching physical Indonesian factory form: Buyer/PO/ETD info -> Complement Checkboxes (Cushion, Glass, Hardware) -> Box Configuration (No Box / With Box: Polyfoam, Single Face, Kraft 100/150/200/275 lbs, Pcs/Box A1/A2) -> Corner & Edge Protect Checklist -> Marking/Shipping Label status -> Signatures Block (Marketing, Dibuat R&D, Mengetahui R&D Head).",
+    "labor_matrix_layout": "Year-over-year % wage matrix (2014-2026) in an editable dense spreadsheet grid with live recalculations across historical HPP references.",
+    "report_analytics_layout": "Bento dashboard with Buyer Cost Matrix chart, Monthly HPP Trend, Material Category Spend Breakdown (Recharts), and searchable exportable table (PDF & Excel download)."
+  },
+  "grids": {
+    "dashboard_bento": "grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4",
+    "form_meta_grid": "grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3",
+    "packaging_check_grid": "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+  },
+  "motion": {
+    "transitions": "transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease",
+    "row_hover": "hover:bg-[#F9F7F4]",
+    "drawer_spring": "stiffness 300, damping 30"
+  },
+  "accessibility": {
+    "wcag_level": "WCAG AA (minimum 4.5:1 text contrast)",
+    "data_testids": "Mandatory data-testid on every button, input, tab, select, modal, and export action (e.g. data-testid=\"btn-add-material-row\", data-testid=\"input-hpp-item-code\", data-testid=\"btn-export-pdf\")."
+  },
+  "media": {
+    "image_urls": {
+      "login_craft_bg": {
+        "url": "https://images.unsplash.com/photo-1534953342533-7711c98712be?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwxfHxyYXR0YW4lMjBmdXJuaXR1cmUlMjB3b3Jrc2hvcCUyMGNyYWZ0fGVufDB8fHx8MTc5MzE2MzQ3M3ww&ixlib=rb-4.1.0&q=85",
+        "description": "Artisan hand-weaving natural rattan straw in traditional workshop, representing Balagi Rattan heritage."
+      },
+      "rattan_texture_pattern": {
+        "url": "https://images.unsplash.com/photo-1734136656115-96837d88e54e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNzl8MHwxfHNlYXJjaHwxfHxyYXR0YW4lMjBjaGFpciUyMHdlYXZlJTIwdGV4dHVyZXxlbnwwfHx8fDE3OTMxNjM0NzN8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Close up geometric woven cane and wicker pattern for subtle banner and empty state textures."
+      },
+      "workshop_craft_bench": {
+        "url": "https://images.unsplash.com/photo-1611572041532-4afaca6339d1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwyfHxyYXR0YW4lMjBmdXJuaXR1cmUlMjB3b3Jrc2hvcCUyMGNyYWZ0fGVufDB8fHx8MTc5MzE2MzQ3M3ww&ixlib=rb-4.1.0&q=85",
+        "description": "Craftsman assembling furniture frame in production studio."
+      }
+    }
+  },
+  "component_structure": {
+    "pages": [
+      "/app/frontend/src/pages/Dashboard.tsx",
+      "/app/frontend/src/pages/HppCalculator.tsx",
+      "/app/frontend/src/pages/MaterialDatabase.tsx",
+      "/app/frontend/src/pages/LaborWageMatrix.tsx",
+      "/app/frontend/src/pages/PackagingSpecForm.tsx",
+      "/app/frontend/src/pages/BuyerImport.tsx",
+      "/app/frontend/src/pages/Reports.tsx",
+      "/app/frontend/src/pages/UserManagement.tsx"
+    ],
+    "components": [
+      "/app/frontend/src/components/layout/AppSidebar.tsx",
+      "/app/frontend/src/components/layout/AppHeader.tsx",
+      "/app/frontend/src/components/hpp/HppSectionTable.tsx",
+      "/app/frontend/src/components/hpp/MaterialPickerDialog.tsx",
+      "/app/frontend/src/components/hpp/HppCostSummaryBar.tsx",
+      "/app/frontend/src/components/hpp/HppPrintSheet.tsx",
+      "/app/frontend/src/components/packaging/PackagingPrintView.tsx",
+      "/app/frontend/src/components/dashboard/KpiCard.tsx",
+      "/app/frontend/src/components/dashboard/BuyerSpendChart.tsx",
+      "/app/frontend/src/components/dashboard/MonthlyCostChart.tsx"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "1. Seed Database with PT Balagi Rattan master materials (≈570 items classified into: Rattan, Webbing, Besi, Aluminium, Wood, Plywood, Kaca, Supplies, Finishing, Packing, Cushion, Upah Kerja, Out Sourcing) with standard Cirebon factory unit prices in IDR.",
+    "2. Seed labor wage matrix with years 2014 to 2026 containing yearly percentage adjustments and standard process hourly/daily unit rates (Rangka, Anyam, Amplas, Finishing, Packing).",
+    "3. Seed default calculations matching the 'Rattan Bench 1' benchmark sheet (Item Code: RB-001, Buyer: Sika Design / Vincent Sheppard / Pottery Barn, Dimensions: TW 1200mm, TD 450mm, TH 850mm, with calculated Net Cost, Rounding, and 32% HPP markup).",
+    "4. Build a responsive live Excel upload parser in FastAPI (`openpyxl` / `pandas`) supporting buyer Excel files and auto-generating the linked HPP record and R&D Packaging Spec form.",
+    "5. Provide one-click print and high-fidelity PDF export for both the HPP Calculation Sheet and the R&D Packaging Form (with signatures block).",
+    "6. Provide Role-Based Access Control (Admin, Marketing, R&D) with instant user switching or login so all workflows can be tested directly.",
+    "7. Include all required `data-testid` attributes on inputs, buttons, rows, tabs, and export triggers for clean automated verification."
+  ]
+}
